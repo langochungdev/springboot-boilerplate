@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Login</title>
+</head>
+<body>
+<button onclick="login('admin','123')">Login Admin</button>
+<button onclick="login('user','123')">Login User</button>
+<button onclick="registerUser()">Register New User</button>
+<button onclick="logout()">Logout</button>
+
+<div id="info" style="margin-top:20px;"></div>
+
+<script>
+    async function login(username, password) {
+        const res = await fetch("http://localhost:8080/api/auth/login", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({username, password}),
+            credentials: "include"   // nhớ kèm cookie HttpOnly
+        });
+        if (res.ok) {
+            const data = await res.json();
+            document.getElementById("info").innerHTML = `
+              <p><b>ID:</b> ${data.user.id}</p>
+              <p><b>Username:</b> ${data.user.username}</p>
+              <p><b>Email:</b> ${data.user.email}</p>
+              <p><b>Full name:</b> ${data.user.fullName}</p>
+              <p><b>Role:</b> ${data.user.role}</p>
+              <p><b>Expires in:</b> ${data.expiresIn}</p>
+            `;
+        } else {
+            document.getElementById("info").innerHTML = "<p>Đăng nhập thất bại</p>";
+        }
+    }
+
+    async function registerUser() {
+        const user = {
+            username: "test" + Date.now(),
+            password: "123",
+            email: "test@example.com",
+            fullName: "Test User",
+            role: "USER"
+        };
+        const res = await fetch("http://localhost:8080/api/auth/register", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(user)
+        });
+        if (res.ok) {
+            const data = await res.json();
+            alert("Đăng ký thành công: " + data.username);
+        } else {
+            alert("Đăng ký thất bại");
+        }
+    }
+
+    async function logout() {
+        const res = await fetch("http://localhost:8080/api/auth/logout", {
+            method: "POST",
+            credentials: "include"
+        });
+        if (res.ok) {
+            document.getElementById("info").innerHTML = "<p>Đã logout</p>";
+        } else {
+            alert("Logout thất bại");
+        }
+    }
+</script>
+</body>
+</html>
