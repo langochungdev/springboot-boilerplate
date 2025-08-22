@@ -9,10 +9,24 @@
 <body>
 <h2>Test Chat + File + Call</h2>
 
-<!-- Nút login -->
-<button onclick="login('user','123')">Login User</button>
-<button onclick="login('admin','123')">Login Admin</button>
-<div id="status"></div>
+<div>
+    <input type="text" id="username" placeholder="Username"/>
+    <input type="password" id="password" placeholder="Password"/>
+    <button onclick="login()">Login</button>
+    <button onclick="logout()">Logout</button>
+    <div id="status"></div>
+</div>
+
+<hr>
+<!-- Tạo Chat -->
+<div>
+    <input type="text" id="partnerId" placeholder="Partner ID"/>
+    <button onclick="createPrivateChat()">Chat Riêng</button>
+    <br>
+    <input type="text" id="groupName" placeholder="Tên nhóm"/>
+    <input type="text" id="groupMemberIds" placeholder="IDs thành viên, cách nhau dấu phẩy"/>
+    <button onclick="createGroupChat()">Tạo Nhóm</button>
+</div>
 
 <hr>
 <!-- Tạo Chat -->
@@ -28,7 +42,6 @@
 <hr>
 <!-- Chat -->
 <input type="text" id="chatId" placeholder="Chat ID"/>
-<button onclick="subscribeChat()">Join Chat</button>
 <input type="text" id="msg" placeholder="Tin nhắn"/>
 <button onclick="sendMessage()">Gửi</button>
 <br>
@@ -47,14 +60,16 @@
 <video id="remoteVideo" autoplay playsinline style="width:200px;border:1px solid black"></video>
 
 <script>
-    let stompClient = null;
+    let stompClient = null; // for call signaling
+    let chatSocket = null;  // for chat messages
     let currentUser = null;
     let pc = null;
     let callWithVideo = true;
-    let chatSubscription = null;
 
     // LOGIN
-    async function login(username, password) {
+    async function login() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
         const res = await fetch("http://localhost:8080/api/auth/login", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -64,20 +79,45 @@
         if(res.ok){
             const data = await res.json();
             currentUser = data.user;
+            localStorage.setItem('userId', currentUser.id);
+            localStorage.setItem('username', currentUser.username);
             document.getElementById("status").innerText = "Logged in: " + currentUser.username;
-            connectWS();
+            connectSockets();
         } else {
             alert("Login failed");
         }
     }
 
-    // CONNECT WS
-    function connectWS(){
+    async function logout(){
+        await fetch("http://localhost:8080/api/auth/logout", {method:'POST', credentials:'include'});
+        if (chatSocket) chatSocket.close();
+        if (stompClient) stompClient.disconnect();
+        currentUser = null;
+        localStorage.clear();
+        document.getElementById("status").innerText = "";
+    }
+
+    // CONNECT SOCKETS
+    function connectSockets(){
+        chatSocket = new WebSocket("ws://localhost:8080/chat");
+        chatSocket.onmessage = e => {
+            const m = JSON.parse(e.data);
+            let html = "<div><b>"+(m.sender?.username||"")+"</b>: "+m.content;
+            if (m.attachments) {
+                m.attachments.forEach(a => {
+                    const url = "/uploads/" + a.fileUrl;
+                    if (a.fileType === "image") html += `<div><img src="${url}" width="100"/></div>`;
+                    else if (a.fileType === "video") html += `<div><video src="${url}" width="100" controls></video></div>`;
+                    else html += `<div><a href="${url}" target="_blank">${a.fileUrl}</a></div>`;
+                });
+            }
+            html += "</div>";
+            document.getElementById("messages").innerHTML += html;
+        };
+
         const socket = new SockJS("http://localhost:8080/ws");
         stompClient = Stomp.over(socket);
         stompClient.connect({}, frame => {
-            console.log("CONNECTED:", frame);
-            // Sub call
             stompClient.subscribe("/topic/call", msg => {
                 const data = JSON.parse(msg.body);
                 if (data.from !== currentUser.username) handleSignal(data);
@@ -133,7 +173,6 @@
         if(res.ok){
             const data = await res.json();
             document.getElementById("chatId").value = data.id;
-            subscribeChat();
         }
     }
 
@@ -152,7 +191,6 @@
         if(res.ok){
             const data = await res.json();
             document.getElementById("chatId").value = data.id;
-            subscribeChat();
         }
     }
 

@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,7 +39,8 @@ public class MessageController {
     private final MessageRepository messageRepository;
     private final JwtUtil jwtUtil;
     private final MessageMapper messageMapper;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final ChatWebSocketHandler wsHandler;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${upload.dir:uploads}") // lấy trong file cấu hình, mặc định uploads
     private String uploadDir;
@@ -97,11 +98,11 @@ public class MessageController {
         MessageDto messageDto = messageMapper.toDto(message);
         messageDto.setAttachments(attachments);
 
-        // Broadcast message cho toàn bộ user trong chat
+        // Gửi tin đến các thành viên đang online
         List<ChatUser> members = chatUserRepository.findByChatId(chatId);
+        String payload = objectMapper.writeValueAsString(messageDto);
         for (ChatUser cu : members) {
-            String dest = "/topic/chat/" + chatId + "/user/" + cu.getUser().getId();
-            messagingTemplate.convertAndSend(dest, messageDto);
+            wsHandler.send(cu.getUser().getId(), payload);
         }
 
         return ResponseEntity.ok(messageDto);
