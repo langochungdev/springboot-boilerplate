@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,7 +51,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<MessageDto> getConversations(String chatId) {
+    public List<MessageDto> getConversations(UUID chatId) {
         Chat chat = chatRepository.findById(chatId).orElse(null);
         if (chat == null) throw new NoPermissionException();
         return messageRepository.findByChatIdOrderByCreatedAtAsc(chatId)
@@ -58,9 +59,9 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void markRead(String messageId) {
+    public void markRead(UUID messageId) {
         Message e = messageRepository.findById(messageId).orElse(null);
-        String currentUserId = CurrentUserUtil.getCurrentUserId();
+        UUID currentUserId = CurrentUserUtil.getCurrentUserId();
         boolean admin = CurrentUserUtil.isAdmin();
         if (e == null) throw new NoPermissionException();
         e.setIsRead(true);

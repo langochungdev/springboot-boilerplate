@@ -22,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -47,7 +48,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             throws IOException, ServletException {
         System.out.println(request.getRequestURI());
         String token = null;
-        String userId = null;
+        UUID userId = null;
 
         String path = request.getRequestURI();
         if (EXCLUDED_PATHS.contains(path)) {

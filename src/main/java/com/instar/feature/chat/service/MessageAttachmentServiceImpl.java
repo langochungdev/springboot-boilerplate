@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,13 +31,13 @@ public class MessageAttachmentServiceImpl implements MessageAttachmentService {
     }
 
     @Override
-    public List<MessageAttachmentDto> findByMessageId(String messageId) {
+    public List<MessageAttachmentDto> findByMessageId(UUID messageId) {
         return messageAttachmentRepository.findByMessageId(messageId)
                 .stream().map(messageAttachmentMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(UUID id) {
         messageAttachmentRepository.deleteById(id);
     }
 }

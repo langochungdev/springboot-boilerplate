@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
 
         deviceRepository.save(device);
 
-        String token = jwtUtil.createToken(user.getUsername(), String.valueOf(user.getId()), user.getRole());
+        String token = jwtUtil.createToken(user.getUsername(), user.getId(), user.getRole());
         long expiresIn = jwtUtil.getExpiration();
 
         AuthResponse.User dto = AuthResponse.User.builder()
@@ -101,7 +102,7 @@ public class AuthServiceImpl implements AuthService {
     public ResponseEntity<?> logout(String token, HttpServletResponse response) {
         if (token != null && jwtUtil.validateToken(token)) {
             // Lấy userId từ token
-            String userId = jwtUtil.extractUserId(token);
+            UUID userId = jwtUtil.extractUserId(token);
 
             // Cập nhật device isActive = false
             deviceRepository.findAllByUserId(userId).forEach(device -> {

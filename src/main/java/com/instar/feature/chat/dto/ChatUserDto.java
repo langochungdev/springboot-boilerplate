@@ -5,12 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ChatUserDto {
-    private String chatId;
-    private String userId;
+    private UUID chatId;
+    private UUID userId;
     private Boolean isAdmin;
 }

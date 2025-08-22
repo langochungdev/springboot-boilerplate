@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -16,8 +17,9 @@ import java.time.LocalDateTime;
 @Table(name = "userBehaviors")
 public class UserBehavior {
     @Id
-    @Column(length = 36, nullable = false, updatable = false)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false, updatable = false, columnDefinition = "uniqueidentifier")
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(nullable = false)
@@ -26,8 +28,8 @@ public class UserBehavior {
     @Column(nullable = false)
     private String action;
 
-    @Column(nullable = false)
-    private String targetId;
+    @Column(nullable = false, columnDefinition = "uniqueidentifier")
+    private UUID targetId;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

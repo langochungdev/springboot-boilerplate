@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +26,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMapper chatMapper;
 
     @Override
-    public ChatDto createGroup(String chatName, String creatorId, List<String> memberIds) {
+    public ChatDto createGroup(String chatName, UUID creatorId, List<UUID> memberIds) {
         User creator = userRepository.findById(creatorId).orElse(null);
         if (creator == null) throw new NoPermissionException();
 
@@ -40,7 +41,7 @@ public class ChatServiceImpl implements ChatService {
         ChatUser adminUser = ChatUser.builder().chat(chat).user(creator).isAdmin(true).build();
         chatUserRepository.save(adminUser);
 
-        for (String userId : memberIds) {
+        for (UUID userId : memberIds) {
             if (!userId.equals(creatorId)) {
                 User member = userRepository.findById(userId).orElse(null);
                 if (member != null) {
@@ -53,7 +54,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ChatDto> getUserChats(String userId) {
+    public List<ChatDto> getUserChats(UUID userId) {
         List<ChatUser> chatUsers = chatUserRepository.findByUserId(userId);
         return chatUsers.stream()
                 .map(chatUser -> chatMapper.toDto(chatUser.getChat()))
@@ -61,7 +62,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void addUserToGroup(String chatId, String userId, boolean isAdmin) {
+    public void addUserToGroup(UUID chatId, UUID userId, boolean isAdmin) {
         Chat chat = chatRepository.findById(chatId).orElse(null);
         User user = userRepository.findById(userId).orElse(null);
         if (chat == null || user == null) throw new NoPermissionException();

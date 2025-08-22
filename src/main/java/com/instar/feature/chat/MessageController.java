@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/messages")
@@ -47,7 +48,7 @@ public class MessageController {
 
     @PostMapping("/send")
     public ResponseEntity<?> sendMessageWithFiles(
-            @RequestParam("chatId") String chatId,
+            @RequestParam("chatId") UUID chatId,
             @RequestParam("content") String content,
             @RequestPart(value = "files", required = false) MultipartFile[] files,
             HttpServletRequest request
@@ -56,7 +57,7 @@ public class MessageController {
         if (token == null || !jwtUtil.validateToken(token))
             return ResponseEntity.status(401).body("Unauthorized");
 
-        String userId = jwtUtil.extractUserId(token);
+        UUID userId = jwtUtil.extractUserId(token);
         User sender = userRepository.findById(userId).orElse(null);
         Chat chat = chatRepository.findById(chatId).orElse(null);
 
