@@ -10,7 +10,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final UserRepository userRepository;
 
     @GetMapping("/{id}")
     public UserDto getUser(@PathVariable UUID id) {

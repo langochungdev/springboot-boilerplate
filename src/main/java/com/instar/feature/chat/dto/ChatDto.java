@@ -1,5 +1,4 @@
 package com.instar.feature.chat.dto;
-
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -13,5 +12,5 @@ public class ChatDto {
     private Boolean isGroup;
     private UUID createdById;
     private LocalDateTime createdAt;
-    private List<UUID> memberIds; // danh sách user id trong nhóm
+    private List<UUID> memberIds;
 }

@@ -11,5 +11,4 @@ public class AuthRequest {
     private String deviceToken;
     private String deviceName;
     private String fingerprint;
-
 }

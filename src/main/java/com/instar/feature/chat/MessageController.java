@@ -1,6 +1,4 @@
 package com.instar.feature.chat;
-
-
 import com.instar.common.util.JwtUtil;
 import com.instar.feature.chat.dto.MessageAttachmentDto;
 import com.instar.feature.chat.dto.MessageDto;
