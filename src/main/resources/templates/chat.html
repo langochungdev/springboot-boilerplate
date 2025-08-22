@@ -77,7 +77,6 @@
         stompClient = Stomp.over(socket);
         stompClient.connect({}, frame => {
             console.log("CONNECTED:", frame);
-
             // Sub call
             stompClient.subscribe("/topic/call", msg => {
                 const data = JSON.parse(msg.body);
