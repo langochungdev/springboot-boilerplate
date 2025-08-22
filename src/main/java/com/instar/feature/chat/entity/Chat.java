@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 @Entity
 @Data
 @NoArgsConstructor
@@ -17,8 +18,9 @@ import java.util.List;
 @Table(name = "chats")
 public class Chat {
     @Id
-    @Column(length = 36, nullable = false, updatable = false)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false, updatable = false, columnDefinition = "uniqueidentifier")
+    private UUID id;
 
     @Column(name = "chat_name", length = 100)
     private String chatName;

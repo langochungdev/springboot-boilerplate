@@ -8,13 +8,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class UserDto {
-    private String id;
+    private UUID id;
 //    @UniqueUsername
     private String username;
 //    @UniqueEmail

@@ -8,6 +8,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 @RequiredArgsConstructor
 public class CurrentUserUtil {
@@ -24,7 +26,7 @@ public class CurrentUserUtil {
         return null;
     }
 
-    public static String getCurrentUserId() {
+    public static UUID getCurrentUserId() {
         CustomUserDetails user = getCurrentUser();
         return user != null ? user.getId() : null;
     }
@@ -37,7 +39,7 @@ public class CurrentUserUtil {
     }
 
     public User getUser() {
-        String userId = getCurrentUserId();
+        UUID userId = getCurrentUserId();
         return userId != null ? userRepository.findById(userId).orElse(null) : null;
     }
 }

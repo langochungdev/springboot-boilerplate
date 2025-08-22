@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -15,8 +16,8 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationMapper notificationMapper;
 
     @Override
-    public List<NotificationDto> findByUserId(String userId) {
-        String currentUserId = CurrentUserUtil.getCurrentUserId();
+    public List<NotificationDto> findByUserId(UUID userId) {
+        UUID currentUserId = CurrentUserUtil.getCurrentUserId();
         boolean admin = CurrentUserUtil.isAdmin();
         if (!userId.equals(currentUserId) && !admin) {
             throw new NoPermissionException();
@@ -28,9 +29,9 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void markRead(String notificationId) {
+    public void markRead(UUID notificationId) {
         Notification n = notificationRepository.findById(notificationId).orElse(null);
-        String currentUserId = CurrentUserUtil.getCurrentUserId();
+        UUID currentUserId = CurrentUserUtil.getCurrentUserId();
         boolean admin = CurrentUserUtil.isAdmin();
         if (n == null || (!n.getUser().getId().equals(currentUserId) && !admin)) {
             throw new NoPermissionException();

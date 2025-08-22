@@ -15,8 +15,15 @@
 <div id="status"></div>
 
 <hr>
+<!-- Tạo chat -->
+<input type="text" id="chatName" placeholder="Tên chat"/>
+<input type="text" id="memberIds" placeholder="ID thành viên, cách nhau bởi dấu phẩy"/>
+<button onclick="createChat()">Tạo Chat</button>
+<div id="createdChat"></div>
+
+<hr>
 <!-- Chat -->
-<input type="text" id="chatId" value="1"/>
+<input type="text" id="chatId" placeholder="Chat ID"/>
 <input type="text" id="msg" placeholder="Tin nhắn"/>
 <button onclick="sendMessage()">Gửi</button>
 <br>
@@ -38,7 +45,6 @@
     let currentUser = null;
     let pc = null;
 
-    // LOGIN
     async function login(username, password) {
         const res = await fetch("http://localhost:8080/api/auth/login", {
             method: "POST",
@@ -56,23 +62,12 @@
         }
     }
 
-    // CONNECT WS
     function connectWS(){
         const socket = new SockJS("http://localhost:8080/ws");
         stompClient = Stomp.over(socket);
         stompClient.connect({}, frame => {
             console.log("CONNECTED:", frame);
-
-            // Sub chat
-            const chatId = document.getElementById("chatId").value;
-            const dest = "/topic/chat/" + chatId + "/user/" + currentUser.id;
-            stompClient.subscribe(dest, msg => {
-                const m = JSON.parse(msg.body);
-                document.getElementById("messages").innerHTML +=
-                    "<div><b>"+(m.sender?.username||"")+"</b>: "+m.content+"</div>";
-            });
-
-            // Sub call
+            subscribeChat();
             stompClient.subscribe("/topic/call", msg => {
                 const data = JSON.parse(msg.body);
                 if (data.from !== currentUser.username) handleSignal(data);
@@ -80,36 +75,63 @@
         });
     }
 
-    // SEND TEXT
+    function subscribeChat(){
+        if(!stompClient || !currentUser) return;
+        const chatId = document.getElementById("chatId").value;
+        if(!chatId) return;
+        const dest = "/topic/chat/" + chatId + "/user/" + currentUser.id;
+        stompClient.subscribe(dest, msg => {
+            const m = JSON.parse(msg.body);
+            document.getElementById("messages").innerHTML +=
+                "<div><b>"+(m.sender?.username||"")+"</b>: "+m.content+"</div>";
+        });
+    }
+
+    async function createChat(){
+        const name = document.getElementById("chatName").value;
+        const memberIds = document.getElementById("memberIds").value
+            .split(",").map(s=>s.trim()).filter(s=>s);
+        const res = await fetch("http://localhost:8080/api/chats", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            credentials: "include",
+            body: JSON.stringify({name, memberIds})
+        });
+        if(res.ok){
+            const chat = await res.json();
+            document.getElementById("chatId").value = chat.id;
+            document.getElementById("createdChat").innerText = "Created chat: " + chat.id;
+            subscribeChat();
+        }else{
+            alert("Tạo chat thất bại");
+        }
+    }
+
     function sendMessage(){
         const chatId = document.getElementById("chatId").value;
         const content = document.getElementById("msg").value;
         const form = new FormData();
-        form.append("chatId", chatId);
         form.append("content", content);
-        fetch("http://localhost:8080/api/messages/send", {
+        fetch(`http://localhost:8080/api/chats/${chatId}/messages`, {
             method: "POST",
             body: form,
             credentials: "include"
         });
     }
 
-    // SEND FILE
     function sendFile(){
         const chatId = document.getElementById("chatId").value;
         const files = document.getElementById("fileInput").files;
         const form = new FormData();
-        form.append("chatId", chatId);
         form.append("content", "[file]");
         for (let f of files) form.append("files", f);
-        fetch("http://localhost:8080/api/messages/send", {
+        fetch(`http://localhost:8080/api/chats/${chatId}/messages`, {
             method: "POST",
             body: form,
             credentials: "include"
         });
     }
 
-    // WEBRTC CALL
     async function startCall() {
         pc = new RTCPeerConnection();
         pc.onicecandidate = e => {

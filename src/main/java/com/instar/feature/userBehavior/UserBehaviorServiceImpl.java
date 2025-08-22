@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,7 +20,7 @@ public class UserBehaviorServiceImpl implements UserBehaviorService {
 
     @Override
     public UserBehaviorDto logBehavior(UserBehaviorDto dto) {
-        String currentUserId = CurrentUserUtil.getCurrentUserId();
+        UUID currentUserId = CurrentUserUtil.getCurrentUserId();
         boolean admin = CurrentUserUtil.isAdmin();
         if (!dto.getUserId().equals(currentUserId) && !admin) {
             throw new NoPermissionException();
@@ -31,8 +32,8 @@ public class UserBehaviorServiceImpl implements UserBehaviorService {
     }
 
     @Override
-    public List<UserBehaviorDto> findByUserId(String userId) {
-        String currentUserId = CurrentUserUtil.getCurrentUserId();
+    public List<UserBehaviorDto> findByUserId(UUID userId) {
+        UUID currentUserId = CurrentUserUtil.getCurrentUserId();
         boolean admin = CurrentUserUtil.isAdmin();
         if (!userId.equals(currentUserId) && !admin) {
             throw new NoPermissionException();
