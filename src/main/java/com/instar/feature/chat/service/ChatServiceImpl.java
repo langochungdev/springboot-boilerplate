@@ -11,6 +11,7 @@ import com.instar.feature.user.User;
 import com.instar.feature.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
     private final ChatUserRepository chatUserRepository;
