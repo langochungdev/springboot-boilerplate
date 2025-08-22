@@ -29,6 +29,17 @@
 </div>
 
 <hr>
+<!-- Tạo Chat -->
+<div>
+    <input type="text" id="partnerId" placeholder="Partner ID"/>
+    <button onclick="createPrivateChat()">Chat Riêng</button>
+    <br>
+    <input type="text" id="groupName" placeholder="Tên nhóm"/>
+    <input type="text" id="groupMemberIds" placeholder="IDs thành viên, cách nhau dấu phẩy"/>
+    <button onclick="createGroupChat()">Tạo Nhóm</button>
+</div>
+
+<hr>
 <!-- Chat -->
 <input type="text" id="chatId" placeholder="Chat ID"/>
 <input type="text" id="msg" placeholder="Tin nhắn"/>
@@ -111,6 +122,27 @@
                 const data = JSON.parse(msg.body);
                 if (data.from !== currentUser.username) handleSignal(data);
             });
+        });
+    }
+
+    function subscribeChat(){
+        if (!stompClient) return;
+        if (chatSubscription) chatSubscription.unsubscribe();
+        const chatId = document.getElementById("chatId").value;
+        const dest = "/topic/chat/" + chatId + "/user/" + currentUser.id;
+        chatSubscription = stompClient.subscribe(dest, msg => {
+            const m = JSON.parse(msg.body);
+            let html = "<div><b>"+(m.sender?.username||"")+"</b>: "+m.content;
+            if (m.attachments) {
+                m.attachments.forEach(a => {
+                    const url = "/uploads/" + a.fileUrl;
+                    if (a.fileType === "image") html += `<div><img src="${url}" width="100"/></div>`;
+                    else if (a.fileType === "video") html += `<div><video src="${url}" width="100" controls></video></div>`;
+                    else html += `<div><a href="${url}" target="_blank">${a.fileUrl}</a></div>`;
+                });
+            }
+            html += "</div>";
+            document.getElementById("messages").innerHTML += html;
         });
     }
 
