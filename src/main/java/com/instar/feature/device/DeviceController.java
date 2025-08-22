@@ -2,6 +2,7 @@ package com.instar.feature.device;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/devices")
@@ -11,7 +12,7 @@ public class DeviceController {
     private final DeviceRepository deviceRepository;
 
     @GetMapping("/user/{userId}")
-    public List<Device> getDevices(@PathVariable String userId) {
+    public List<Device> getDevices(@PathVariable UUID userId) {
         return deviceRepository.findAll()
                 .stream()
                 .filter(d -> d.getUser().getId().equals(userId))
@@ -24,7 +25,7 @@ public class DeviceController {
     }
 
     @DeleteMapping("/{id}")
-    public String remove(@PathVariable String id) {
+    public String remove(@PathVariable UUID id) {
         deviceRepository.deleteById(id);
         return "Đã xóa thiết bị";
     }

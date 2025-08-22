@@ -18,14 +18,15 @@ package com.instar.feature.chat.entity;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 public class ChatUserId implements Serializable {
-    private String chat;
-    private String user;
+    private UUID chat;
+    private UUID user;
 
     public ChatUserId() {}
 
-    public ChatUserId(String chat, String user) {
+    public ChatUserId(UUID chat, UUID user) {
         this.chat = chat;
         this.user = user;
     }

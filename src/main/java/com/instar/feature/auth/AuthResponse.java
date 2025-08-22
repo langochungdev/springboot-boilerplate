@@ -1,5 +1,6 @@
 package com.instar.feature.auth;
 import lombok.*;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -14,7 +15,7 @@ public class AuthResponse {
     @AllArgsConstructor
     @Builder
     public static class User {
-        private String id;
+        private UUID id;
         private String username;
         private String email;
         private String fullName;

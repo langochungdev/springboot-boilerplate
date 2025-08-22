@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDto findById(String id) {
+    public UserDto findById(UUID id) {
         return userRepository.findById(id)
                 .map(userMapper::toDto)
                 .orElse(null);
@@ -35,8 +36,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto update(String id, UserDto dto) {
-        String currentUserId = CurrentUserUtil.getCurrentUserId();
+    public UserDto update(UUID id, UserDto dto) {
+        UUID currentUserId = CurrentUserUtil.getCurrentUserId();
         boolean admin = CurrentUserUtil.isAdmin();
         if (!id.equals(currentUserId) && !admin) {
             throw new NoPermissionException();
@@ -55,8 +56,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(String id) {
-        String currentUserId = CurrentUserUtil.getCurrentUserId();
+    public void delete(UUID id) {
+        UUID currentUserId = CurrentUserUtil.getCurrentUserId();
         boolean admin = CurrentUserUtil.isAdmin();
         if (!id.equals(currentUserId) && !admin) {
             throw new NoPermissionException();
@@ -76,7 +77,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto findByUsername(String username) {
-        String currentUserId = CurrentUserUtil.getCurrentUserId();
+        UUID currentUserId = CurrentUserUtil.getCurrentUserId();
         boolean admin = CurrentUserUtil.isAdmin();
         User user = userRepository.findAll().stream()
                 .filter(u -> u.getUsername().equals(username))
@@ -90,8 +91,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(String id, String oldPassword, String newPassword) {
-        String currentUserId = CurrentUserUtil.getCurrentUserId();
+    public void changePassword(UUID id, String oldPassword, String newPassword) {
+        UUID currentUserId = CurrentUserUtil.getCurrentUserId();
         boolean admin = CurrentUserUtil.isAdmin();
         if (!id.equals(currentUserId) && !admin) {
             throw new NoPermissionException();
@@ -104,8 +105,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void verifyAccount(String id, String code) {
-        String currentUserId = CurrentUserUtil.getCurrentUserId();
+    public void verifyAccount(UUID id, String code) {
+        UUID currentUserId = CurrentUserUtil.getCurrentUserId();
         boolean admin = CurrentUserUtil.isAdmin();
         if (!id.equals(currentUserId) && !admin) {
             throw new NoPermissionException();

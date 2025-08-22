@@ -7,15 +7,16 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MessageDto {
-    private String id;
-    private String chatId;
-    private String senderId;
+    private UUID id;
+    private UUID chatId;
+    private UUID senderId;
     private String content;
     private LocalDateTime createdAt;
     private Boolean isRead;

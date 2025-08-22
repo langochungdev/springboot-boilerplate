@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -15,8 +16,9 @@ import java.time.LocalDateTime;
 @Table(name = "Users")
 public class User {
     @Id
-    @Column(length = 36, nullable = false, updatable = false)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false, updatable = false, columnDefinition = "uniqueidentifier")
+    private UUID id;
 
     @Column(unique = true, nullable = false, length = 50)
     private String username;
