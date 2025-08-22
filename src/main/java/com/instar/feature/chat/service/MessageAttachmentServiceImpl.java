@@ -7,6 +7,7 @@ import com.instar.feature.chat.entity.MessageAttachment;
 import com.instar.feature.chat.mapper.MessageAttachmentMapper;
 import com.instar.feature.chat.repository.MessageAttachmentRepository;
 import com.instar.feature.chat.repository.MessageRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +24,9 @@ public class MessageAttachmentServiceImpl implements MessageAttachmentService {
 
     @Override
     public MessageAttachmentDto add(MessageAttachmentDto dto) {
-        Message message = messageRepository.findById(dto.getMessageId()).orElse(null);
-        if (message == null) throw new NoPermissionException();
+        Message message = messageRepository.findById(dto.getMessageId())
+                .orElseThrow(() -> new EntityNotFoundException("Message not found: " + dto.getMessageId()));
+
         MessageAttachment e = messageAttachmentMapper.toEntity(dto, message);
         e = messageAttachmentRepository.save(e);
         return messageAttachmentMapper.toDto(e);
@@ -38,6 +40,9 @@ public class MessageAttachmentServiceImpl implements MessageAttachmentService {
 
     @Override
     public void delete(UUID id) {
+        if (!messageAttachmentRepository.existsById(id)) {
+            throw new EntityNotFoundException("Attachment not found: " + id);
+        }
         messageAttachmentRepository.deleteById(id);
     }
 }

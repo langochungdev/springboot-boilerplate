@@ -1,10 +1,6 @@
 package com.instar.feature.chat.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +13,7 @@ public class MessageDto {
     private UUID id;
     private UUID chatId;
     private UUID senderId;
+    private UUID receiverId; // chỉ dùng cho private chat
     private String content;
     private LocalDateTime createdAt;
     private Boolean isRead;

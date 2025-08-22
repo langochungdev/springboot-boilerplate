@@ -2,270 +2,105 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Chat + File + Call Test</title>
+    <title>Chat Demo</title>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 </head>
 <body>
-<h2>Test Chat + File + Call</h2>
-
-<div>
-    <input type="text" id="username" placeholder="Username"/>
-    <input type="password" id="password" placeholder="Password"/>
-    <button onclick="login()">Login</button>
-    <button onclick="logout()">Logout</button>
-    <div id="status"></div>
-</div>
+<h2>Đăng nhập</h2>
+<input id="username" placeholder="Username">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="loginInfo"></p>
 
 <hr>
-<!-- Tạo Chat -->
-<div>
-    <input type="text" id="partnerId" placeholder="Partner ID"/>
-    <button onclick="createPrivateChat()">Chat Riêng</button>
-    <br>
-    <input type="text" id="groupName" placeholder="Tên nhóm"/>
-    <input type="text" id="groupMemberIds" placeholder="IDs thành viên, cách nhau dấu phẩy"/>
-    <button onclick="createGroupChat()">Tạo Nhóm</button>
-</div>
+
+<h2>Chat cá nhân</h2>
+<input id="receiverId" placeholder="Receiver UUID">
+<input id="privateMessage" placeholder="Nội dung...">
+<button onclick="sendPrivate()">Gửi</button>
+
+<h2>Chat nhóm</h2>
+<input id="groupId" placeholder="Group UUID">
+<input id="groupMessage" placeholder="Nội dung...">
+<button onclick="sendGroup()">Gửi</button>
 
 <hr>
-<!-- Tạo Chat -->
-<div>
-    <input type="text" id="partnerId" placeholder="Partner ID"/>
-    <button onclick="createPrivateChat()">Chat Riêng</button>
-    <br>
-    <input type="text" id="groupName" placeholder="Tên nhóm"/>
-    <input type="text" id="groupMemberIds" placeholder="IDs thành viên, cách nhau dấu phẩy"/>
-    <button onclick="createGroupChat()">Tạo Nhóm</button>
-</div>
 
-<hr>
-<!-- Chat -->
-<input type="text" id="chatId" placeholder="Chat ID"/>
-<input type="text" id="msg" placeholder="Tin nhắn"/>
-<button onclick="sendMessage()">Gửi</button>
-<br>
-<input type="file" id="fileInput" multiple/>
-<button onclick="sendFile()">Gửi File/Ảnh</button>
-
-<div id="messages" style="border:1px solid #ccc;margin-top:10px;padding:10px;height:200px;overflow:auto"></div>
-
-<hr>
-<!-- Call -->
-<button onclick="startVideoCall()">Video Call</button>
-<button onclick="startAudioCall()">Audio Call</button>
-<button onclick="hangup()">Hangup</button>
-<br>
-<video id="localVideo" autoplay muted playsinline style="width:200px;border:1px solid black"></video>
-<video id="remoteVideo" autoplay playsinline style="width:200px;border:1px solid black"></video>
+<h3>Tin nhắn nhận được:</h3>
+<div id="messages" style="border:1px solid #ccc; padding:10px; height:300px; overflow:auto;"></div>
 
 <script>
-    let stompClient = null; // for call signaling
-    let chatSocket = null;  // for chat messages
-    let currentUser = null;
-    let pc = null;
-    let callWithVideo = true;
+    let stompClient = null;
+    let currentUserId = null;
 
-    // LOGIN
     async function login() {
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
+
         const res = await fetch("http://localhost:8080/api/auth/login", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({username,password}),
+            body: JSON.stringify({username, password}),
             credentials: "include"
         });
-        if(res.ok){
+
+        if (res.ok) {
             const data = await res.json();
-            currentUser = data.user;
-            localStorage.setItem('userId', currentUser.id);
-            localStorage.setItem('username', currentUser.username);
-            document.getElementById("status").innerText = "Logged in: " + currentUser.username;
-            connectSockets();
+            currentUserId = data.user.id;
+            localStorage.setItem("userId", currentUserId);
+            document.getElementById("loginInfo").innerText = "Đăng nhập thành công, userId = " + currentUserId;
+            connectWebSocket();
         } else {
-            alert("Login failed");
+            alert("Login thất bại");
         }
     }
 
-    async function logout(){
-        await fetch("http://localhost:8080/api/auth/logout", {method:'POST', credentials:'include'});
-        if (chatSocket) chatSocket.close();
-        if (stompClient) stompClient.disconnect();
-        currentUser = null;
-        localStorage.clear();
-        document.getElementById("status").innerText = "";
-    }
-
-    // CONNECT SOCKETS
-    function connectSockets(){
-        chatSocket = new WebSocket("ws://localhost:8080/chat");
-        chatSocket.onmessage = e => {
-            const m = JSON.parse(e.data);
-            let html = "<div><b>"+(m.sender?.username||"")+"</b>: "+m.content;
-            if (m.attachments) {
-                m.attachments.forEach(a => {
-                    const url = "/uploads/" + a.fileUrl;
-                    if (a.fileType === "image") html += `<div><img src="${url}" width="100"/></div>`;
-                    else if (a.fileType === "video") html += `<div><video src="${url}" width="100" controls></video></div>`;
-                    else html += `<div><a href="${url}" target="_blank">${a.fileUrl}</a></div>`;
-                });
-            }
-            html += "</div>";
-            document.getElementById("messages").innerHTML += html;
-        };
-
-        const socket = new SockJS("http://localhost:8080/ws");
+    function connectWebSocket() {
+        let socket = new SockJS("http://localhost:8080/ws-chat");
         stompClient = Stomp.over(socket);
-        stompClient.connect({}, frame => {
-            stompClient.subscribe("/topic/call", msg => {
-                const data = JSON.parse(msg.body);
-                if (data.from !== currentUser.username) handleSignal(data);
+
+        stompClient.connect({}, function(frame) {
+            console.log("Connected: " + frame);
+
+            // subscribe tin nhắn riêng
+            stompClient.subscribe("/user/queue/messages", function(message) {
+                appendMsg("Private: " + message.body);
             });
         });
     }
 
-    function subscribeChat(){
-        if (!stompClient) return;
-        if (chatSubscription) chatSubscription.unsubscribe();
-        const chatId = document.getElementById("chatId").value;
-        const dest = "/topic/chat/" + chatId + "/user/" + currentUser.id;
-        chatSubscription = stompClient.subscribe(dest, msg => {
-            const m = JSON.parse(msg.body);
-            let html = "<div><b>"+(m.sender?.username||"")+"</b>: "+m.content;
-            if (m.attachments) {
-                m.attachments.forEach(a => {
-                    const url = "/uploads/" + a.fileUrl;
-                    if (a.fileType === "image") html += `<div><img src="${url}" width="100"/></div>`;
-                    else if (a.fileType === "video") html += `<div><video src="${url}" width="100" controls></video></div>`;
-                    else html += `<div><a href="${url}" target="_blank">${a.fileUrl}</a></div>`;
-                });
-            }
-            html += "</div>";
-            document.getElementById("messages").innerHTML += html;
+    function sendPrivate() {
+        const receiverId = document.getElementById("receiverId").value;
+        const content = document.getElementById("privateMessage").value;
+
+        stompClient.send("/app/chat.private", {}, JSON.stringify({
+            senderId: currentUserId,
+            receiverId: receiverId,
+            content: content
+        }));
+    }
+
+    function sendGroup() {
+        const groupId = document.getElementById("groupId").value;
+        const content = document.getElementById("groupMessage").value;
+
+        // mỗi khi nhập groupId, tự động subscribe topic đó
+        stompClient.subscribe("/topic/" + groupId, function(message) {
+            appendMsg("Group[" + groupId + "]: " + message.body);
         });
+
+        stompClient.send("/app/chat.group", {}, JSON.stringify({
+            senderId: currentUserId,
+            chatId: groupId,
+            content: content
+        }));
     }
 
-    // SEND TEXT
-    function sendMessage(){
-        const chatId = document.getElementById("chatId").value;
-        const content = document.getElementById("msg").value;
-        const form = new FormData();
-        form.append("chatId", chatId);
-        form.append("content", content);
-        fetch("http://localhost:8080/api/messages/send", {
-            method: "POST",
-            body: form,
-            credentials: "include"
-        });
-    }
-
-    // CREATE PRIVATE CHAT
-    async function createPrivateChat(){
-        const partnerId = document.getElementById("partnerId").value;
-        const form = new FormData();
-        form.append("partnerId", partnerId);
-        const res = await fetch("http://localhost:8080/api/chats/private", {
-            method: "POST",
-            body: form,
-            credentials: "include"
-        });
-        if(res.ok){
-            const data = await res.json();
-            document.getElementById("chatId").value = data.id;
-        }
-    }
-
-    // CREATE GROUP CHAT
-    async function createGroupChat(){
-        const name = document.getElementById("groupName").value;
-        const members = document.getElementById("groupMemberIds").value.split(",").map(s=>s.trim());
-        const form = new FormData();
-        form.append("chatName", name);
-        for (let m of members){ if(m) form.append("memberIds", m); }
-        const res = await fetch("http://localhost:8080/api/chats/group", {
-            method: "POST",
-            body: form,
-            credentials: "include"
-        });
-        if(res.ok){
-            const data = await res.json();
-            document.getElementById("chatId").value = data.id;
-        }
-    }
-
-    // SEND FILE
-    function sendFile(){
-        const chatId = document.getElementById("chatId").value;
-        const files = document.getElementById("fileInput").files;
-        const form = new FormData();
-        form.append("chatId", chatId);
-        form.append("content", "[file]");
-        for (let f of files) form.append("files", f);
-        fetch("http://localhost:8080/api/messages/send", {
-            method: "POST",
-            body: form,
-            credentials: "include"
-        });
-    }
-
-    // WEBRTC CALL
-    function startVideoCall(){ startCall(true); }
-    function startAudioCall(){ startCall(false); }
-
-    async function startCall(withVideo) {
-        callWithVideo = withVideo;
-        pc = new RTCPeerConnection();
-        pc.onicecandidate = e => {
-            if (e.candidate) sendSignal({type:"candidate", candidate:e.candidate});
-        };
-        pc.ontrack = e => remoteVideo.srcObject = e.streams[0];
-
-        const stream = await navigator.mediaDevices.getUserMedia({video:withVideo, audio:true});
-        stream.getTracks().forEach(t => pc.addTrack(t, stream));
-        if (withVideo) localVideo.srcObject = stream; else localVideo.srcObject = null;
-
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        sendSignal({type:"offer", sdp:offer.sdp});
-    }
-
-    async function handleSignal(msg) {
-        if (msg.video !== undefined) callWithVideo = msg.video;
-        if (!pc) {
-            pc = new RTCPeerConnection();
-            pc.onicecandidate = e => {
-                if (e.candidate) sendSignal({type:"candidate", candidate:e.candidate});
-            };
-            pc.ontrack = e => remoteVideo.srcObject = e.streams[0];
-            const stream = await navigator.mediaDevices.getUserMedia({video:callWithVideo, audio:true});
-            stream.getTracks().forEach(t => pc.addTrack(t, stream));
-            if (callWithVideo) localVideo.srcObject = stream;
-        }
-
-        if (msg.type === "offer") {
-            await pc.setRemoteDescription({type:"offer", sdp:msg.sdp});
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-            sendSignal({type:"answer", sdp:answer.sdp});
-        } else if (msg.type === "answer") {
-            await pc.setRemoteDescription({type:"answer", sdp:msg.sdp});
-        } else if (msg.type === "candidate") {
-            await pc.addIceCandidate(msg.candidate);
-        }
-    }
-
-    function sendSignal(data) {
-        data.from = currentUser.username;
-        data.video = callWithVideo;
-        stompClient.send("/app/call", {}, JSON.stringify(data));
-    }
-
-    function hangup() {
-        if (pc) {
-            pc.close();
-            pc = null;
-        }
+    function appendMsg(text) {
+        const div = document.getElementById("messages");
+        div.innerHTML += "<p>" + text + "</p>";
+        div.scrollTop = div.scrollHeight;
     }
 </script>
 </body>

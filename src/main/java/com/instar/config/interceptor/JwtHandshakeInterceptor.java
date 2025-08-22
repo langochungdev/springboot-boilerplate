@@ -1,4 +1,4 @@
-package com.instar.config;
+package com.instar.config.interceptor;
 
 import com.instar.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;

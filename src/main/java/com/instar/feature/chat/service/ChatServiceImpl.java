@@ -1,105 +1,97 @@
 package com.instar.feature.chat.service;
 
-import com.instar.common.exception.NoPermissionException;
-import com.instar.feature.chat.dto.ChatDto;
+import com.instar.feature.chat.dto.MessageDto;
 import com.instar.feature.chat.entity.Chat;
 import com.instar.feature.chat.entity.ChatUser;
-import com.instar.feature.chat.mapper.ChatMapper;
+import com.instar.feature.chat.entity.Message;
+import com.instar.feature.chat.mapper.MessageMapper;
 import com.instar.feature.chat.repository.ChatRepository;
 import com.instar.feature.chat.repository.ChatUserRepository;
+import com.instar.feature.chat.repository.MessageRepository;
 import com.instar.feature.user.User;
 import com.instar.feature.user.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
-public class ChatServiceImpl implements ChatService {
+public class ChatServiceImpl implements ChatService{
+
+    private final SimpMessagingTemplate messagingTemplate;
+    private final MessageRepository messageRepository;
     private final ChatRepository chatRepository;
     private final ChatUserRepository chatUserRepository;
     private final UserRepository userRepository;
-    private final ChatMapper chatMapper;
+    private final MessageMapper messageMapper;
 
-    @Override
-    public ChatDto createGroup(String chatName, UUID creatorId, List<UUID> memberIds) {
-        User creator = userRepository.findById(creatorId).orElse(null);
-        if (creator == null) throw new NoPermissionException();
+    // 1-1
+    public void sendPrivateMessage(MessageDto dto) {
+        User sender = userRepository.findById(dto.getSenderId()).orElseThrow();
+        User receiver = userRepository.findById(dto.getReceiverId()).orElseThrow();
 
-        Chat chat = Chat.builder()
-                .chatName(chatName)
-                .isGroup(true)
-                .createdBy(creator)
-                .createdAt(LocalDateTime.now())
-                .build();
-        chat = chatRepository.save(chat);
+        // tìm hoặc tạo chat 1-1
+        Chat chat = chatRepository.findPrivateChat(sender.getId(), receiver.getId())
+                .orElseGet(() -> {
+                    Chat newChat = Chat.builder()
+                            .isGroup(false)
+                            .chatName(sender.getUsername() + "-" + receiver.getUsername())
+                            .createdAt(LocalDateTime.now())
+                            .createdBy(sender)
+                            .build();
+                    newChat = chatRepository.save(newChat);
 
-        ChatUser adminUser = ChatUser.builder().chat(chat).user(creator).isAdmin(true).build();
-        chatUserRepository.save(adminUser);
+                    // thêm 2 user vào chat_users
+                    ChatUser cu1 = ChatUser.builder().chat(newChat).user(sender).isAdmin(false).build();
+                    ChatUser cu2 = ChatUser.builder().chat(newChat).user(receiver).isAdmin(false).build();
+                    chatUserRepository.saveAll(List.of(cu1, cu2));
 
-        for (UUID userId : memberIds) {
-            if (!userId.equals(creatorId)) {
-                User member = userRepository.findById(userId).orElse(null);
-                if (member != null) {
-                    ChatUser chatUser = ChatUser.builder().chat(chat).user(member).isAdmin(false).build();
-                    chatUserRepository.save(chatUser);
-                }
-            }
+                    return newChat;
+                });
+
+        dto.setChatId(chat.getId());
+        dto.setCreatedAt(LocalDateTime.now());
+        dto.setIsRead(false);
+
+        Message message = messageMapper.toEntity(dto, sender, chat);
+        messageRepository.save(message);
+
+        // gửi realtime tới receiver
+        messagingTemplate.convertAndSendToUser(
+                receiver.getId().toString(),
+                "/queue/messages",
+                messageMapper.toDto(message)
+        );
+    }
+
+    @Transactional
+    public void sendGroupMessage(MessageDto dto) {
+        User sender = userRepository.findById(dto.getSenderId()).orElseThrow();
+        Chat chat = chatRepository.findById(dto.getChatId()).orElseThrow();
+
+        if (!chat.getIsGroup()) {
+            throw new IllegalArgumentException("Chat này không phải group");
         }
-        return chatMapper.toDto(chat);
-    }
 
-    @Override
-    public ChatDto createPrivateChat(UUID userId1, UUID userId2) {
-        User user1 = userRepository.findById(userId1).orElse(null);
-        User user2 = userRepository.findById(userId2).orElse(null);
-        if (user1 == null || user2 == null) throw new NoPermissionException();
-
-        // Tìm xem đã có chat riêng giữa 2 user hay chưa
-        List<ChatUser> user1Chats = chatUserRepository.findByUserId(userId1);
-        for (ChatUser cu : user1Chats) {
-            Chat chat = cu.getChat();
-            if (Boolean.FALSE.equals(chat.getIsGroup())) {
-                List<ChatUser> members = chatUserRepository.findByChatId(chat.getId());
-                boolean exists = members.stream()
-                        .anyMatch(m -> m.getUser().getId().equals(userId2));
-                if (exists) return chatMapper.toDto(chat);
-            }
+        boolean isMember = chat.getChatUsers().stream()
+                .anyMatch(cu -> cu.getUser().getId().equals(sender.getId()));
+        if (!isMember) {
+            throw new SecurityException("User không thuộc group");
         }
 
-        Chat chat = Chat.builder()
-                .isGroup(false)
-                .createdBy(user1)
-                .createdAt(LocalDateTime.now())
-                .build();
-        chat = chatRepository.save(chat);
+        dto.setCreatedAt(LocalDateTime.now());
+        dto.setIsRead(false);
 
-        chatUserRepository.save(ChatUser.builder().chat(chat).user(user1).isAdmin(false).build());
-        chatUserRepository.save(ChatUser.builder().chat(chat).user(user2).isAdmin(false).build());
+        Message message = messageMapper.toEntity(dto, sender, chat);
+        messageRepository.save(message);
 
-        return chatMapper.toDto(chat);
+        messagingTemplate.convertAndSend("/topic/" + chat.getId(),
+                messageMapper.toDto(message));
     }
 
-    @Override
-    public List<ChatDto> getUserChats(UUID userId) {
-        List<ChatUser> chatUsers = chatUserRepository.findByUserId(userId);
-        return chatUsers.stream()
-                .map(chatUser -> chatMapper.toDto(chatUser.getChat()))
-                .collect(Collectors.toList());
-    }
 
-    @Override
-    public void addUserToGroup(UUID chatId, UUID userId, boolean isAdmin) {
-        Chat chat = chatRepository.findById(chatId).orElse(null);
-        User user = userRepository.findById(userId).orElse(null);
-        if (chat == null || user == null) throw new NoPermissionException();
-        ChatUser chatUser = ChatUser.builder().chat(chat).user(user).isAdmin(isAdmin).build();
-        chatUserRepository.save(chatUser);
-    }
 }

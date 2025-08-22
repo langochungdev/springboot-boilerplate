@@ -5,7 +5,6 @@ import com.instar.feature.chat.entity.Chat;
 import com.instar.feature.chat.entity.ChatUser;
 import com.instar.feature.user.User;
 import org.springframework.stereotype.Component;
-
 @Component
 public class ChatUserMapper {
     public ChatUserDto toDto(ChatUser e) {

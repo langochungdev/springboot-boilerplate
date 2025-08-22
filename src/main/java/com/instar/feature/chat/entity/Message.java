@@ -2,23 +2,19 @@ package com.instar.feature.chat.entity;
 
 import com.instar.feature.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Table(name = "messages")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(nullable = false, updatable = false, columnDefinition = "uniqueidentifier")
     private UUID id;
 
     @ManyToOne
@@ -33,8 +29,11 @@ public class Message {
     private String content;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "is_read", nullable = false)
     private Boolean isRead = false;
+
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MessageAttachment> attachments;
 }

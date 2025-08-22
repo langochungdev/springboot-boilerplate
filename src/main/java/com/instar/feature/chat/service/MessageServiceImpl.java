@@ -10,6 +10,7 @@ import com.instar.feature.chat.repository.ChatRepository;
 import com.instar.feature.chat.repository.MessageRepository;
 import com.instar.feature.user.User;
 import com.instar.feature.user.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,15 +29,17 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public MessageDto save(MessageDto dto) {
-        // String currentUserId = CurrentUserUtil.getCurrentUserId();
-        // boolean admin = CurrentUserUtil.isAdmin();
-        // if (!dto.getSenderId().equals(currentUserId) && !admin) {
-        //     throw new NoPermissionException();
-        // }
-        User sender = userRepository.findById(dto.getSenderId()).orElse(null);
-        Chat chat = chatRepository.findById(dto.getChatId()).orElse(null);
+        User sender = userRepository.findById(dto.getSenderId())
+                .orElseThrow(() -> new EntityNotFoundException("Sender not found: " + dto.getSenderId()));
 
-        if (sender == null || chat == null) throw new NoPermissionException();
+        Chat chat = chatRepository.findById(dto.getChatId())
+                .orElseThrow(() -> new EntityNotFoundException("Chat not found: " + dto.getChatId()));
+
+        UUID currentUserId = CurrentUserUtil.getCurrentUserId();
+        boolean admin = CurrentUserUtil.isAdmin();
+        if (!sender.getId().equals(currentUserId) && !admin) {
+            throw new NoPermissionException();
+        }
 
         Message e = Message.builder()
                 .chat(chat)
@@ -52,19 +55,30 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<MessageDto> getConversations(UUID chatId) {
-        Chat chat = chatRepository.findById(chatId).orElse(null);
-        if (chat == null) throw new NoPermissionException();
-        return messageRepository.findByChatIdOrderByCreatedAtAsc(chatId)
-                .stream().map(messageMapper::toDto).collect(Collectors.toList());
+        chatRepository.findById(chatId)
+                .orElseThrow(() -> new EntityNotFoundException("Chat not found: " + chatId));
+
+        return messageRepository.findByChatIdOrderByCreatedAtAsc(chatId).stream()
+                .map(messageMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public void markRead(UUID messageId) {
-        Message e = messageRepository.findById(messageId).orElse(null);
+        Message e = messageRepository.findById(messageId)
+                .orElseThrow(() -> new EntityNotFoundException("Message not found: " + messageId));
+
         UUID currentUserId = CurrentUserUtil.getCurrentUserId();
         boolean admin = CurrentUserUtil.isAdmin();
-        if (e == null) throw new NoPermissionException();
+
+        boolean isMember = e.getChat().getChatUsers().stream()
+                .anyMatch(cu -> cu.getUser().getId().equals(currentUserId));
+        if (!isMember && !admin) {
+            throw new NoPermissionException();
+        }
+
         e.setIsRead(true);
         messageRepository.save(e);
     }
 }
+
