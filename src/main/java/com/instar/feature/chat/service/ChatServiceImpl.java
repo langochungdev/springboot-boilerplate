@@ -54,6 +54,37 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public ChatDto createPrivateChat(UUID userId1, UUID userId2) {
+        User user1 = userRepository.findById(userId1).orElse(null);
+        User user2 = userRepository.findById(userId2).orElse(null);
+        if (user1 == null || user2 == null) throw new NoPermissionException();
+
+        // Tìm xem đã có chat riêng giữa 2 user hay chưa
+        List<ChatUser> user1Chats = chatUserRepository.findByUserId(userId1);
+        for (ChatUser cu : user1Chats) {
+            Chat chat = cu.getChat();
+            if (Boolean.FALSE.equals(chat.getIsGroup())) {
+                List<ChatUser> members = chatUserRepository.findByChatId(chat.getId());
+                boolean exists = members.stream()
+                        .anyMatch(m -> m.getUser().getId().equals(userId2));
+                if (exists) return chatMapper.toDto(chat);
+            }
+        }
+
+        Chat chat = Chat.builder()
+                .isGroup(false)
+                .createdBy(user1)
+                .createdAt(LocalDateTime.now())
+                .build();
+        chat = chatRepository.save(chat);
+
+        chatUserRepository.save(ChatUser.builder().chat(chat).user(user1).isAdmin(false).build());
+        chatUserRepository.save(ChatUser.builder().chat(chat).user(user2).isAdmin(false).build());
+
+        return chatMapper.toDto(chat);
+    }
+
+    @Override
     public List<ChatDto> getUserChats(UUID userId) {
         List<ChatUser> chatUsers = chatUserRepository.findByUserId(userId);
         return chatUsers.stream()
