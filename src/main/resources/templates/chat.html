@@ -27,7 +27,8 @@
 
 <hr>
 <!-- Chat -->
-<input type="text" id="chatId" value="1"/>
+<input type="text" id="chatId" placeholder="Chat ID"/>
+<button onclick="subscribeChat()">Join Chat</button>
 <input type="text" id="msg" placeholder="Tin nhắn"/>
 <button onclick="sendMessage()">Gửi</button>
 <br>
@@ -76,9 +77,6 @@
         stompClient = Stomp.over(socket);
         stompClient.connect({}, frame => {
             console.log("CONNECTED:", frame);
-
-            subscribeChat();
-
             // Sub call
             stompClient.subscribe("/topic/call", msg => {
                 const data = JSON.parse(msg.body);
