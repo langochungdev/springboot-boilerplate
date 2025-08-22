@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -16,8 +17,9 @@ import java.time.LocalDateTime;
 @Table(name = "Notifications")
 public class Notification {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", columnDefinition = "uniqueidentifier")
-    private String id;
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(nullable = false)

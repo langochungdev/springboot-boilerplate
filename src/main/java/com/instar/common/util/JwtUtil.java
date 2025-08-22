@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtUtil {
@@ -26,9 +27,9 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(SECRET.getBytes()); //HMAC phương pháp xác thực dữ liệu
     }
 
-    public String createToken(String username, String userId, String role) {
+    public String createToken(String username, UUID userId, String role) {
         return Jwts.builder()
-                .setSubject(userId)
+                .setSubject(userId.toString())
                 .setIssuer("instar")
                 .claim("username", username)
                 .claim("role", role)
@@ -78,13 +79,14 @@ public class JwtUtil {
     }
 
     // mặc định lấy key sub trong payload
-    public String extractUserId(String token) {
-        return Jwts.parserBuilder()
+    public UUID extractUserId(String token) {
+        String id = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+        return UUID.fromString(id);
     }
 
     public String extractUsername(String token) {

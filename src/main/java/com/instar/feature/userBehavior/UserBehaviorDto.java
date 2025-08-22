@@ -4,15 +4,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class UserBehaviorDto {
-    private String id;
-    private String userId;
+    private UUID id;
+    private UUID userId;
     private String action;
-    private String targetId;
+    private UUID targetId;
     private LocalDateTime createdAt;
 }

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -14,8 +16,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "message_attachments")
 public class MessageAttachment {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", columnDefinition = "uniqueidentifier")
-    private String id;
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "message_id", nullable = false)

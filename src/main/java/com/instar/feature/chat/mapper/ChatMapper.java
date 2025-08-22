@@ -6,6 +6,7 @@ import com.instar.feature.chat.entity.ChatUser;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -19,7 +20,7 @@ public class ChatMapper {
         dto.setCreatedById(chat.getCreatedBy() != null ? chat.getCreatedBy().getId() : null);
 
         // Lấy danh sách user id từ chatUsers
-        List<String> memberIds = chat.getChatUsers() != null
+        List<UUID> memberIds = chat.getChatUsers() != null
                 ? chat.getChatUsers().stream()
                 .map(ChatUser::getUser)
                 .map(user -> user.getId())

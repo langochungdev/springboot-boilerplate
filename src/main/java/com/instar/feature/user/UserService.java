@@ -1,13 +1,14 @@
 package com.instar.feature.user;
 import java.util.List;
+import java.util.UUID;
 
 public interface UserService {
-    UserDto findById(String id);
+    UserDto findById(UUID id);
     UserDto create(UserDto userDto);
-    UserDto update(String id, UserDto userDto);
-    void delete(String id);
+    UserDto update(UUID id, UserDto userDto);
+    void delete(UUID id);
     List<User> findAll();
     UserDto findByUsername(String username);
-    void changePassword(String id, String oldPassword, String newPassword);
-    void verifyAccount(String id, String code);
+    void changePassword(UUID id, String oldPassword, String newPassword);
+    void verifyAccount(UUID id, String code);
 }

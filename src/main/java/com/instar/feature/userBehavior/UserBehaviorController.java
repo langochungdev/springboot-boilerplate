@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user-behaviors")
@@ -17,7 +18,7 @@ public class UserBehaviorController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<UserBehaviorDto> getByUser(@PathVariable String userId) {
+    public List<UserBehaviorDto> getByUser(@PathVariable UUID userId) {
         return userBehaviorService.findByUserId(userId);
     }
 }
