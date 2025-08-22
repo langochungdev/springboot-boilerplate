@@ -11,6 +11,7 @@ import com.instar.feature.user.User;
 import com.instar.feature.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
     private final ChatUserRepository chatUserRepository;
@@ -50,6 +52,37 @@ public class ChatServiceImpl implements ChatService {
                 }
             }
         }
+        return chatMapper.toDto(chat);
+    }
+
+    @Override
+    public ChatDto createPrivateChat(UUID userId1, UUID userId2) {
+        User user1 = userRepository.findById(userId1).orElse(null);
+        User user2 = userRepository.findById(userId2).orElse(null);
+        if (user1 == null || user2 == null) throw new NoPermissionException();
+
+        // Tìm xem đã có chat riêng giữa 2 user hay chưa
+        List<ChatUser> user1Chats = chatUserRepository.findByUserId(userId1);
+        for (ChatUser cu : user1Chats) {
+            Chat chat = cu.getChat();
+            if (Boolean.FALSE.equals(chat.getIsGroup())) {
+                List<ChatUser> members = chatUserRepository.findByChatId(chat.getId());
+                boolean exists = members.stream()
+                        .anyMatch(m -> m.getUser().getId().equals(userId2));
+                if (exists) return chatMapper.toDto(chat);
+            }
+        }
+
+        Chat chat = Chat.builder()
+                .isGroup(false)
+                .createdBy(user1)
+                .createdAt(LocalDateTime.now())
+                .build();
+        chat = chatRepository.save(chat);
+
+        chatUserRepository.save(ChatUser.builder().chat(chat).user(user1).isAdmin(false).build());
+        chatUserRepository.save(ChatUser.builder().chat(chat).user(user2).isAdmin(false).build());
+
         return chatMapper.toDto(chat);
     }
 

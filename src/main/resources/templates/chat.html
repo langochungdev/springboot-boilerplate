@@ -9,14 +9,28 @@
 <body>
 <h2>Test Chat + File + Call</h2>
 
-<!-- Nút login -->
-<button onclick="login('user','123')">Login User</button>
-<button onclick="login('admin','123')">Login Admin</button>
-<div id="status"></div>
+<div>
+    <input type="text" id="username" placeholder="Username"/>
+    <input type="password" id="password" placeholder="Password"/>
+    <button onclick="login()">Login</button>
+    <button onclick="logout()">Logout</button>
+    <div id="status"></div>
+</div>
+
+<hr>
+<!-- Tạo Chat -->
+<div>
+    <input type="text" id="partnerId" placeholder="Partner ID"/>
+    <button onclick="createPrivateChat()">Chat Riêng</button>
+    <br>
+    <input type="text" id="groupName" placeholder="Tên nhóm"/>
+    <input type="text" id="groupMemberIds" placeholder="IDs thành viên, cách nhau dấu phẩy"/>
+    <button onclick="createGroupChat()">Tạo Nhóm</button>
+</div>
 
 <hr>
 <!-- Chat -->
-<input type="text" id="chatId" value="1"/>
+<input type="text" id="chatId" placeholder="Chat ID"/>
 <input type="text" id="msg" placeholder="Tin nhắn"/>
 <button onclick="sendMessage()">Gửi</button>
 <br>
@@ -27,19 +41,24 @@
 
 <hr>
 <!-- Call -->
-<button onclick="startCall()">Start Call</button>
+<button onclick="startVideoCall()">Video Call</button>
+<button onclick="startAudioCall()">Audio Call</button>
 <button onclick="hangup()">Hangup</button>
 <br>
 <video id="localVideo" autoplay muted playsinline style="width:200px;border:1px solid black"></video>
 <video id="remoteVideo" autoplay playsinline style="width:200px;border:1px solid black"></video>
 
 <script>
-    let stompClient = null;
+    let stompClient = null; // for call signaling
+    let chatSocket = null;  // for chat messages
     let currentUser = null;
     let pc = null;
+    let callWithVideo = true;
 
     // LOGIN
-    async function login(username, password) {
+    async function login() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
         const res = await fetch("http://localhost:8080/api/auth/login", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -49,30 +68,45 @@
         if(res.ok){
             const data = await res.json();
             currentUser = data.user;
+            localStorage.setItem('userId', currentUser.id);
+            localStorage.setItem('username', currentUser.username);
             document.getElementById("status").innerText = "Logged in: " + currentUser.username;
-            connectWS();
+            connectSockets();
         } else {
             alert("Login failed");
         }
     }
 
-    // CONNECT WS
-    function connectWS(){
+    async function logout(){
+        await fetch("http://localhost:8080/api/auth/logout", {method:'POST', credentials:'include'});
+        if (chatSocket) chatSocket.close();
+        if (stompClient) stompClient.disconnect();
+        currentUser = null;
+        localStorage.clear();
+        document.getElementById("status").innerText = "";
+    }
+
+    // CONNECT SOCKETS
+    function connectSockets(){
+        chatSocket = new WebSocket("ws://localhost:8080/chat");
+        chatSocket.onmessage = e => {
+            const m = JSON.parse(e.data);
+            let html = "<div><b>"+(m.sender?.username||"")+"</b>: "+m.content;
+            if (m.attachments) {
+                m.attachments.forEach(a => {
+                    const url = "/uploads/" + a.fileUrl;
+                    if (a.fileType === "image") html += `<div><img src="${url}" width="100"/></div>`;
+                    else if (a.fileType === "video") html += `<div><video src="${url}" width="100" controls></video></div>`;
+                    else html += `<div><a href="${url}" target="_blank">${a.fileUrl}</a></div>`;
+                });
+            }
+            html += "</div>";
+            document.getElementById("messages").innerHTML += html;
+        };
+
         const socket = new SockJS("http://localhost:8080/ws");
         stompClient = Stomp.over(socket);
         stompClient.connect({}, frame => {
-            console.log("CONNECTED:", frame);
-
-            // Sub chat
-            const chatId = document.getElementById("chatId").value;
-            const dest = "/topic/chat/" + chatId + "/user/" + currentUser.id;
-            stompClient.subscribe(dest, msg => {
-                const m = JSON.parse(msg.body);
-                document.getElementById("messages").innerHTML +=
-                    "<div><b>"+(m.sender?.username||"")+"</b>: "+m.content+"</div>";
-            });
-
-            // Sub call
             stompClient.subscribe("/topic/call", msg => {
                 const data = JSON.parse(msg.body);
                 if (data.from !== currentUser.username) handleSignal(data);
@@ -94,6 +128,40 @@
         });
     }
 
+    // CREATE PRIVATE CHAT
+    async function createPrivateChat(){
+        const partnerId = document.getElementById("partnerId").value;
+        const form = new FormData();
+        form.append("partnerId", partnerId);
+        const res = await fetch("http://localhost:8080/api/chats/private", {
+            method: "POST",
+            body: form,
+            credentials: "include"
+        });
+        if(res.ok){
+            const data = await res.json();
+            document.getElementById("chatId").value = data.id;
+        }
+    }
+
+    // CREATE GROUP CHAT
+    async function createGroupChat(){
+        const name = document.getElementById("groupName").value;
+        const members = document.getElementById("groupMemberIds").value.split(",").map(s=>s.trim());
+        const form = new FormData();
+        form.append("chatName", name);
+        for (let m of members){ if(m) form.append("memberIds", m); }
+        const res = await fetch("http://localhost:8080/api/chats/group", {
+            method: "POST",
+            body: form,
+            credentials: "include"
+        });
+        if(res.ok){
+            const data = await res.json();
+            document.getElementById("chatId").value = data.id;
+        }
+    }
+
     // SEND FILE
     function sendFile(){
         const chatId = document.getElementById("chatId").value;
@@ -110,16 +178,20 @@
     }
 
     // WEBRTC CALL
-    async function startCall() {
+    function startVideoCall(){ startCall(true); }
+    function startAudioCall(){ startCall(false); }
+
+    async function startCall(withVideo) {
+        callWithVideo = withVideo;
         pc = new RTCPeerConnection();
         pc.onicecandidate = e => {
             if (e.candidate) sendSignal({type:"candidate", candidate:e.candidate});
         };
         pc.ontrack = e => remoteVideo.srcObject = e.streams[0];
 
-        const stream = await navigator.mediaDevices.getUserMedia({video:true, audio:true});
+        const stream = await navigator.mediaDevices.getUserMedia({video:withVideo, audio:true});
         stream.getTracks().forEach(t => pc.addTrack(t, stream));
-        localVideo.srcObject = stream;
+        if (withVideo) localVideo.srcObject = stream; else localVideo.srcObject = null;
 
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
@@ -127,15 +199,16 @@
     }
 
     async function handleSignal(msg) {
+        if (msg.video !== undefined) callWithVideo = msg.video;
         if (!pc) {
             pc = new RTCPeerConnection();
             pc.onicecandidate = e => {
                 if (e.candidate) sendSignal({type:"candidate", candidate:e.candidate});
             };
             pc.ontrack = e => remoteVideo.srcObject = e.streams[0];
-            const stream = await navigator.mediaDevices.getUserMedia({video:true, audio:true});
+            const stream = await navigator.mediaDevices.getUserMedia({video:callWithVideo, audio:true});
             stream.getTracks().forEach(t => pc.addTrack(t, stream));
-            localVideo.srcObject = stream;
+            if (callWithVideo) localVideo.srcObject = stream;
         }
 
         if (msg.type === "offer") {
@@ -152,6 +225,7 @@
 
     function sendSignal(data) {
         data.from = currentUser.username;
+        data.video = callWithVideo;
         stompClient.send("/app/call", {}, JSON.stringify(data));
     }
 
