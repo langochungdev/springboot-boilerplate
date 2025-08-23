@@ -1,12 +1,11 @@
-package com.instar.feature.chat.service;
-
-import com.instar.common.exception.NoPermissionException;
+package com.instar.feature.chat.service.implement;
 import com.instar.feature.chat.dto.MessageAttachmentDto;
 import com.instar.feature.chat.entity.Message;
 import com.instar.feature.chat.entity.MessageAttachment;
 import com.instar.feature.chat.mapper.MessageAttachmentMapper;
 import com.instar.feature.chat.repository.MessageAttachmentRepository;
 import com.instar.feature.chat.repository.MessageRepository;
+import com.instar.feature.chat.service.MessageAttachmentService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

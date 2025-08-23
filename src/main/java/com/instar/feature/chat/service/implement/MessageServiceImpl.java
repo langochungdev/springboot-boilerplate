@@ -1,5 +1,4 @@
-package com.instar.feature.chat.service;
-
+package com.instar.feature.chat.service.implement;
 import com.instar.common.exception.NoPermissionException;
 import com.instar.common.util.CurrentUserUtil;
 import com.instar.feature.chat.dto.MessageDto;
@@ -8,6 +7,7 @@ import com.instar.feature.chat.entity.Message;
 import com.instar.feature.chat.mapper.MessageMapper;
 import com.instar.feature.chat.repository.ChatRepository;
 import com.instar.feature.chat.repository.MessageRepository;
+import com.instar.feature.chat.service.MessageService;
 import com.instar.feature.user.User;
 import com.instar.feature.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -31,7 +31,6 @@ public class MessageServiceImpl implements MessageService {
     public MessageDto save(MessageDto dto) {
         User sender = userRepository.findById(dto.getSenderId())
                 .orElseThrow(() -> new EntityNotFoundException("Sender not found: " + dto.getSenderId()));
-
         Chat chat = chatRepository.findById(dto.getChatId())
                 .orElseThrow(() -> new EntityNotFoundException("Chat not found: " + dto.getChatId()));
 

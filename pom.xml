@@ -9,7 +9,7 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.instar</groupId>
-	<artifactId>instar-backend</artifactId>
+	<artifactId>boilerplate</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>Instar</name>

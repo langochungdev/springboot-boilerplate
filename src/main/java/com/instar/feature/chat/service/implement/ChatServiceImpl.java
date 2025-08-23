@@ -1,5 +1,4 @@
-package com.instar.feature.chat.service;
-
+package com.instar.feature.chat.service.implement;
 import com.instar.feature.chat.dto.MessageDto;
 import com.instar.feature.chat.entity.Chat;
 import com.instar.feature.chat.entity.ChatUser;
@@ -8,19 +7,19 @@ import com.instar.feature.chat.mapper.MessageMapper;
 import com.instar.feature.chat.repository.ChatRepository;
 import com.instar.feature.chat.repository.ChatUserRepository;
 import com.instar.feature.chat.repository.MessageRepository;
+import com.instar.feature.chat.service.ChatService;
 import com.instar.feature.user.User;
 import com.instar.feature.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ChatServiceImpl implements ChatService{
+public class ChatServiceImpl implements ChatService {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageRepository messageRepository;
@@ -29,7 +28,6 @@ public class ChatServiceImpl implements ChatService{
     private final UserRepository userRepository;
     private final MessageMapper messageMapper;
 
-    // 1-1
     public void sendPrivateMessage(MessageDto dto) {
         User sender = userRepository.findById(dto.getSenderId()).orElseThrow();
         User receiver = userRepository.findById(dto.getReceiverId()).orElseThrow();
@@ -92,6 +90,4 @@ public class ChatServiceImpl implements ChatService{
         messagingTemplate.convertAndSend("/topic/" + chat.getId(),
                 messageMapper.toDto(message));
     }
-
-
 }

@@ -23,18 +23,15 @@ public class AuthController {
         return authService.login(request, response);
     }
 
-
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@CookieValue(name = "token", required = false) String token, HttpServletResponse response) {
         return authService.logout(token, response);
     }
 
-
     @PostMapping("/register")
     public UserDto register(@RequestBody User user) {
         return authService.register(user);
     }
-
 
     @GetMapping("/me")
     public ResponseEntity<?> checkStatus() {
