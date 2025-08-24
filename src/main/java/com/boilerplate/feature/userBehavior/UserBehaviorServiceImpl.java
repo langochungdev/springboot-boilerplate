@@ -1,0 +1,46 @@
+package com.boilerplate.feature.userBehavior;
+
+import com.boilerplate.common.exception.NoPermissionException;
+import com.boilerplate.common.util.CurrentUserUtil;
+import com.boilerplate.feature.user.User;
+import com.boilerplate.feature.user.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class UserBehaviorServiceImpl implements UserBehaviorService {
+    private final UserBehaviorRepository userBehaviorRepository;
+    private final UserRepository userRepository;
+    private final UserBehaviorMapper userBehaviorMapper;
+
+    @Override
+    public UserBehaviorDto logBehavior(UserBehaviorDto dto) {
+        UUID currentUserId = CurrentUserUtil.getCurrentUserId();
+        boolean admin = CurrentUserUtil.isAdmin();
+        if (!dto.getUserId().equals(currentUserId) && !admin) {
+            throw new NoPermissionException();
+        }
+        User user = userRepository.findById(dto.getUserId()).orElse(null);
+        UserBehavior e = userBehaviorMapper.toEntity(dto, user);
+        e = userBehaviorRepository.save(e);
+        return userBehaviorMapper.toDto(e);
+    }
+
+    @Override
+    public List<UserBehaviorDto> findByUserId(UUID userId) {
+        UUID currentUserId = CurrentUserUtil.getCurrentUserId();
+        boolean admin = CurrentUserUtil.isAdmin();
+        if (!userId.equals(currentUserId) && !admin) {
+            throw new NoPermissionException();
+        }
+        return userBehaviorRepository.findAll().stream()
+                .filter(b -> b.getUser().getId().equals(userId))
+                .map(userBehaviorMapper::toDto)
+                .collect(Collectors.toList());
+    }
+}

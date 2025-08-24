@@ -1,0 +1,75 @@
+<configuration>
+    <!-- Kéo defaults + CONSOLE mặc định của Spring Boot -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <!-- Dùng biến môi trường LOG_DIR, mặc định ./logs -->
+    <property name="LOG_DIR" value="${LOG_DIR:-logs}"/>
+
+    <!-- app.log: tổng hệ thống -->
+    <appender name="APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/app.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/app-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n%wEx</pattern>
+        </encoder>
+    </appender>
+
+    <!-- chat.log -->
+    <appender name="CHAT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/chat.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/chat-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>14</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d %-5level %logger{36} - %msg%n%wEx</pattern>
+        </encoder>
+    </appender>
+
+    <!-- auth.log -->
+    <appender name="AUTH" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/auth.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/auth-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>14</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d %-5level %logger{36} - %msg%n%wEx</pattern>
+        </encoder>
+    </appender>
+
+    <!-- http.log -->
+    <appender name="HTTP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/http.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/http-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>14</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n%wEx</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Root: dùng CONSOLE mặc định của Spring Boot để giữ đúng màu + pattern gốc -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="APP"/>
+    </root>
+
+    <!-- Logger theo feature -->
+    <logger name="com.boilerplate.feature.chat" level="DEBUG" additivity="false">
+        <appender-ref ref="CHAT"/>
+    </logger>
+
+    <logger name="com.boilerplate.feature.auth" level="INFO" additivity="false">
+        <appender-ref ref="AUTH"/>
+    </logger>
+
+    <logger name="com.boilerplate.common.filter" level="INFO" additivity="false">
+        <appender-ref ref="HTTP"/>
+    </logger>
+</configuration>

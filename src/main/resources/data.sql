@@ -10,7 +10,6 @@ VALUES
     ('11111111-1111-1111-1111-111111111111', 'admin', 'admin@email.com',
      '$2a$12$.NALdJeDlmXUugMWI2AniO5CbhgsPWm9gDkWxZPA4nj/t118ieHRS',
      N'La Hung Admin', NULL, N'Chào mọi người!', GETDATE(), 1, 1, 'ADMIN'),
-
     ('22222222-2222-2222-2222-222222222222', 'user', 'user@email.com',
      '$2a$12$.NALdJeDlmXUugMWI2AniO5CbhgsPWm9gDkWxZPA4nj/t118ieHRS',
      N'La Hung User', NULL, N'Yêu du lịch', GETDATE(), 1, 1, 'USER');

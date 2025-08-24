@@ -60,13 +60,26 @@
         let socket = new SockJS("http://localhost:8080/ws-chat");
         stompClient = Stomp.over(socket);
 
-        stompClient.connect({}, function(frame) {
+        stompClient.connect({}, async function(frame) {
             console.log("Connected: " + frame);
 
             // subscribe tin nhắn riêng
             stompClient.subscribe("/user/queue/messages", function(message) {
                 appendMsg("Private: " + message.body);
             });
+
+            // gọi API lấy danh sách các chat mà user hiện tại tham gia
+            const res = await fetch("http://localhost:8080/api/chats/my", {credentials: "include"});
+            if (res.ok) {
+                const chats = await res.json();
+                chats.forEach(chat => {
+                    if (chat.isGroup) {
+                        stompClient.subscribe("/topic/" + chat.id, function(message) {
+                            appendMsg("Group[" + chat.chatName + "]: " + message.body);
+                        });
+                    }
+                });
+            }
         });
     }
 
@@ -84,11 +97,6 @@
     function sendGroup() {
         const groupId = document.getElementById("groupId").value;
         const content = document.getElementById("groupMessage").value;
-
-        // mỗi khi nhập groupId, tự động subscribe topic đó
-        stompClient.subscribe("/topic/" + groupId, function(message) {
-            appendMsg("Group[" + groupId + "]: " + message.body);
-        });
 
         stompClient.send("/app/chat.group", {}, JSON.stringify({
             senderId: currentUserId,
