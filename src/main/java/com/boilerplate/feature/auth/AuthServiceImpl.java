@@ -1,4 +1,6 @@
 package com.boilerplate.feature.auth;
+import com.boilerplate.common.exception.BusinessException;
+import com.boilerplate.common.exception.errorcode.AuthError;
 import com.boilerplate.common.service.TokenBlacklistService;
 import com.boilerplate.common.util.CurrentUserUtil;
 import com.boilerplate.common.util.JwtUtil;
@@ -34,19 +36,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> login(AuthRequest request, HttpServletResponse response) {
-        User user = userRepository.findByUsername(request.getUsername()).orElse(null);
-        if (user == null) {
-            log.warn("[AUTH] Login thất bại: username={} không tồn tại", request.getUsername());
-//            ErrorResponder.sendError(response, "sai tai khoan");
-            return ResponseEntity.badRequest().build();
-        }
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new BusinessException(AuthError.USER_NOT_FOUND));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())){
             log.warn("[AUTH] Login thất bại: username={} nhập sai mật khẩu", request.getUsername());
-//            ErrorResponder.sendError(response, "sai mat khau");
-            return ResponseEntity.badRequest().build();
+            throw new BusinessException(AuthError.PASSWORD_NOT_MATCH);
         }
 
-        // Lưu hoặc cập nhật thông tin thiết bị
         Device device = deviceRepository
                 .findByUserIdAndFingerprint(user.getId(), request.getFingerprint())
                 .orElse(Device.builder()

@@ -33,13 +33,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/auth/**").permitAll()
-//                        .requestMatchers("/uploads/**").permitAll()
-//                        .requestMatchers("/ws/**", "/app/**", "/topic/**", "/queue/**").permitAll()
-//                        .anyRequest().authenticated()
-                                .anyRequest().permitAll()
-                );
-//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/ws/**", "/app/**", "/topic/**", "/queue/**").permitAll()
+                        .anyRequest().authenticated()
+//                                .anyRequest().permitAll()
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
