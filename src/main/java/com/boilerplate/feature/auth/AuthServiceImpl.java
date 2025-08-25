@@ -36,8 +36,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> login(AuthRequest request, HttpServletResponse response) {
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new BusinessException(AuthError.USER_NOT_FOUND));
+        User user = userRepository.findByUsername(request.getUsername()).orElse(null);
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())){
             log.warn("[AUTH] Login thất bại: username={} nhập sai mật khẩu", request.getUsername());
             throw new BusinessException(AuthError.PASSWORD_NOT_MATCH);

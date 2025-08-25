@@ -1,5 +1,4 @@
 package com.boilerplate.feature.chat.entity;
-
 import com.boilerplate.feature.user.User;
 import jakarta.persistence.*;
 import lombok.*;

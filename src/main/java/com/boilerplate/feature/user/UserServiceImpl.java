@@ -1,9 +1,13 @@
 package com.boilerplate.feature.user;
+import com.boilerplate.common.exception.BusinessException;
+import com.boilerplate.common.exception.errorcode.AuthError;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -14,10 +18,15 @@ public class UserServiceImpl implements UserService {
     @Override
 //    @PreAuthorize("hasRole('ADMIN') or #userId == principal.id")
     public void changePassword(UUID id, String oldPassword, String newPassword) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user == null) return;
+        log.info("Request to change password for userId={}", id);
+        User user = userRepository.findById(id).orElseThrow(() -> new BusinessException(AuthError.USER_NOT_FOUND));
+        if (user == null){
+            log.warn("User with id={} not found, cannot change password", id);
+            return;
+        }
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+        log.info("Password changed successfully for userId={}", id);
     }
 
     @Override
