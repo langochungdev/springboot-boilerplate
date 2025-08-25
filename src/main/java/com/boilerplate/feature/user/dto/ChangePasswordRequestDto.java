@@ -1,4 +1,4 @@
-package com.boilerplate.feature.user;
+package com.boilerplate.feature.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

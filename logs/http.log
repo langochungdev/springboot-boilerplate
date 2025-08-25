@@ -1,24 +1,8 @@
-2025-08-24 16:55:54 DEBUG c.b.common.filter.JwtAuthFilter - Filter 'jwtAuthFilter' configured for use
-2025-08-24 16:55:54 DEBUG c.b.common.filter.HttpLoggingFilter - Filter 'httpLoggingFilterRegistration' configured for use
-2025-08-24 16:56:22 INFO  c.b.common.filter.HttpLoggingFilter - [HTTP] POST /api/auth/login -> 200 962ms ip=0:0:0:0:0:0:0:1 user=anonymousUser len(req=37,resp=163) traceId=3b7ca348-4c63-4417-9c33-4ec4839a59f6
-2025-08-24 16:56:22 DEBUG c.b.common.filter.HttpLoggingFilter - [HTTP][BODY][REQ] {"username":"admin","password":"123"}
-2025-08-24 16:56:22 DEBUG c.b.common.filter.HttpLoggingFilter - [HTTP][BODY][RES] {"expiresIn":604800000,"user":{"id":"11111111-1111-1111-1111-111111111111","username":"admin","email":"admin@email.com","fullName":"La Hung Admin","role":"ADMIN"}}
-2025-08-24 16:56:23 INFO  c.b.common.filter.HttpLoggingFilter - [HTTP] GET /ws-chat/info?t=1756029382751 -> 200 2ms ip=0:0:0:0:0:0:0:1 user=admin len(req=-1,resp=79) traceId=f57adbb6-4535-44db-a784-ee36cb71cf3d
-2025-08-24 16:56:23 DEBUG c.b.common.filter.HttpLoggingFilter - [HTTP][BODY][REQ] 
-2025-08-24 16:56:23 DEBUG c.b.common.filter.HttpLoggingFilter - [HTTP][BODY][RES] {"entropy":-1357067662,"origins":["*:*"],"cookie_needed":true,"websocket":true}
-2025-08-24 16:56:23 INFO  c.b.common.filter.HttpLoggingFilter - [HTTP] GET /ws-chat/793/twhfjmcy/websocket -> 101 35ms ip=0:0:0:0:0:0:0:1 user=admin len(req=-1,resp=0) traceId=bc20971e-079c-4733-a5da-770683d7a69b
-2025-08-24 16:56:23 DEBUG c.b.common.filter.HttpLoggingFilter - [HTTP][BODY][REQ] 
-2025-08-24 16:56:23 DEBUG c.b.common.filter.HttpLoggingFilter - [HTTP][BODY][RES] 
-2025-08-24 16:56:23 INFO  c.b.common.filter.HttpLoggingFilter - [HTTP] GET /api/chats/my -> 200 119ms ip=0:0:0:0:0:0:0:1 user=admin len(req=-1,resp=264) traceId=bf04b9cf-433c-49a6-85c6-e1f96e74b35a
-2025-08-24 16:56:23 DEBUG c.b.common.filter.HttpLoggingFilter - [HTTP][BODY][REQ] 
-2025-08-24 16:56:23 DEBUG c.b.common.filter.HttpLoggingFilter - [HTTP][BODY][RES] [{"id":"33333333-3333-3333-3333-333333333333","chatName":null,"isGroup":true,"createdAt":"2025-08-24T16:55:56.546667","createdById":"11111111-1111-1111-1111-111111111111","memberIds":["11111111-1111-1111-1111-111111111111","22222222-2222-2222-2222-222222222222"]}]
-2025-08-24 17:01:09 DEBUG c.b.common.filter.JwtAuthFilter - Filter 'jwtAuthFilter' configured for use
-2025-08-24 17:01:09 DEBUG c.b.common.filter.HttpLoggingFilter - Filter 'httpLoggingFilterRegistration' configured for use
-2025-08-24 17:05:22 INFO  c.b.common.filter.HttpLoggingFilter - [HTTP] POST /api/auth/login -> 200 955ms ip=0:0:0:0:0:0:0:1 user=anonymousUser len(req=37,resp=163) traceId=b1036dec-eba2-417a-971b-8776de7d8f43
-2025-08-24 17:05:22 INFO  c.b.common.filter.HttpLoggingFilter - [HTTP] GET /ws-chat/info?t=1756029922354 -> 200 2ms ip=0:0:0:0:0:0:0:1 user=admin len(req=-1,resp=79) traceId=bb4dcb4b-827c-4941-8b0f-3887cb44475f
-2025-08-24 17:05:22 INFO  c.b.common.filter.HttpLoggingFilter - [HTTP] GET /ws-chat/943/4h1eqb1g/websocket -> 101 36ms ip=0:0:0:0:0:0:0:1 user=admin len(req=-1,resp=0) traceId=0d3e36eb-27fd-4fab-b617-bf3000e013a4
-2025-08-24 17:05:23 INFO  c.b.common.filter.HttpLoggingFilter - [HTTP] GET /api/chats/my -> 200 73ms ip=0:0:0:0:0:0:0:1 user=admin len(req=-1,resp=264) traceId=57f86b92-0dc2-45dc-9df1-fef70b4323af
-2025-08-24 17:05:56 INFO  c.b.common.filter.HttpLoggingFilter - [HTTP] POST /api/auth/login -> 200 1470ms ip=0:0:0:0:0:0:0:1 user=anonymousUser len(req=36,resp=159) traceId=1f01eca1-0066-422b-ae4d-1710ca915ea5
-2025-08-24 17:05:56 INFO  c.b.common.filter.HttpLoggingFilter - [HTTP] GET /ws-chat/info?t=1756029956578 -> 200 2ms ip=0:0:0:0:0:0:0:1 user=user len(req=-1,resp=79) traceId=d7449bfa-beca-4db4-a899-1bd058d759de
-2025-08-24 17:05:56 INFO  c.b.common.filter.HttpLoggingFilter - [HTTP] GET /ws-chat/459/x2bxrpro/websocket -> 101 10ms ip=0:0:0:0:0:0:0:1 user=user len(req=-1,resp=0) traceId=35426578-09f0-4361-9fbf-1dc1c2a40cb1
-2025-08-24 17:05:56 INFO  c.b.common.filter.HttpLoggingFilter - [HTTP] GET /api/chats/my -> 200 30ms ip=0:0:0:0:0:0:0:1 user=user len(req=-1,resp=264) traceId=da4c7656-7635-47dd-9b77-fb8a0b9f163e
+2025-08-25 17:53:32 DEBUG c.b.common.filter.JwtAuthFilter - Filter 'jwtAuthFilter' configured for use
+2025-08-25 17:53:32 DEBUG c.b.common.filter.HttpLoggingFilter - Filter 'httpLoggingFilterRegistration' configured for use
+2025-08-25 17:53:40 INFO  c.b.common.filter.HttpLoggingFilter - [HTTP] GET /api/users/11111111-1111-1111-1111-11111111111 -> 404 663ms ip=0:0:0:0:0:0:0:1 user=anonymousUser len(req=-1,resp=182) traceId=acbd0268-0097-45ca-b87b-37888675a95d
+2025-08-25 17:53:40 DEBUG c.b.common.filter.HttpLoggingFilter - [HTTP][BODY][REQ] 
+2025-08-25 17:53:40 DEBUG c.b.common.filter.HttpLoggingFilter - [HTTP][BODY][RES] {"status":404,"code":"USER_NOT_FOUND","message":"Không tìm thấy user với id = 11111111-1111-1111-1111-011111111111","path":"uri=/api/users/11111111-1111-1111-1111-11111111111"}
+2025-08-25 17:53:45 INFO  c.b.common.filter.HttpLoggingFilter - [HTTP] GET /api/users/11111111-1111-1111-1111-111111111111 -> 200 43ms ip=0:0:0:0:0:0:0:1 user=anonymousUser len(req=-1,resp=267) traceId=82f6503b-895f-40fd-8713-20832f7bfa5b
+2025-08-25 17:53:45 DEBUG c.b.common.filter.HttpLoggingFilter - [HTTP][BODY][REQ] 
+2025-08-25 17:53:45 DEBUG c.b.common.filter.HttpLoggingFilter - [HTTP][BODY][RES] {"id":"11111111-1111-1111-1111-111111111111","username":"admin","email":"admin@email.com","fullName":"La Hung Admin","avatarUrl":null,"bio":"Chào m?i ngư?i!","createdAt":"2025-08-25T17:53:34.166667","lastLogin":null,"isActive":true,"isVerified":true,"role":"ADMIN"}

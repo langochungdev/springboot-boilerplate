@@ -1,6 +1,4 @@
 package com.boilerplate.feature.chat.service.implement;
-import com.boilerplate.common.exception.NoPermissionException;
-import com.boilerplate.common.util.CurrentUserUtil;
 import com.boilerplate.feature.chat.dto.MessageDto;
 import com.boilerplate.feature.chat.entity.Chat;
 import com.boilerplate.feature.chat.entity.Message;
@@ -13,7 +11,6 @@ import com.boilerplate.feature.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;

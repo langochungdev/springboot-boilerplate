@@ -1,9 +1,9 @@
 package com.boilerplate.feature.chat.service.implement;
-import com.boilerplate.common.exception.NoPermissionException;
+import com.boilerplate.common.exception.BusinessException;
+import com.boilerplate.common.exception.errorcode.ChatError;
 import com.boilerplate.feature.chat.dto.MessageDto;
 import com.boilerplate.feature.chat.entity.Chat;
 import com.boilerplate.feature.chat.entity.ChatUser;
-import com.boilerplate.feature.chat.mapper.MessageMapper;
 import com.boilerplate.feature.chat.repository.ChatRepository;
 import com.boilerplate.feature.chat.repository.ChatUserRepository;
 import com.boilerplate.feature.chat.service.ChatService;
@@ -80,7 +80,7 @@ public class ChatServiceImpl implements ChatService {
         boolean isMember = chat.getChatUsers().stream()
                 .anyMatch(cu -> cu.getUser().getId().equals(sender.getId()));
         if (!isMember) {
-            throw new NoPermissionException();
+            throw new BusinessException(ChatError.IS_NOT_MEMBER);
         }
 
         dto.setCreatedAt(LocalDateTime.now());

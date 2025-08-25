@@ -1,4 +1,8 @@
 package com.boilerplate.feature.user;
+import com.boilerplate.common.exception.BusinessException;
+import com.boilerplate.common.exception.errorcode.UserError;
+import com.boilerplate.feature.user.dto.ChangePasswordRequestDto;
+import com.boilerplate.feature.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,20 +14,25 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @GetMapping("/{id}")
     public UserDto getUser(@PathVariable UUID id) {
-        return userService.findById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(UserError.USER_NOT_FOUND, id.toString()));
+        return userMapper.toDto(user);
     }
 
     @GetMapping
     public List<User> getAll() {
-        return userService.findAll();
+        return userRepository.findAll();
     }
 
     @PutMapping("/{id}")
-    public UserDto updateUser(@PathVariable UUID id, @RequestBody UserDto dto) {
-        return userService.update(id, dto);
+    public UserDto save(@RequestBody User e) {
+        User user =  userRepository.save(e);
+        return  userMapper.toDto(user);
     }
 
 

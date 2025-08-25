@@ -1,0 +1,18 @@
+{
+  "name": "springboot-dev",
+  "build": {
+    "dockerfile": "Dockerfile.dev",
+    "context": "."
+  },
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "java.jdt.ls.java.home": "/usr/lib/jvm/msopenjdk-21-amd64"
+  },
+  "forwardPorts": [8080, 1433, 6379],
+  "mounts": [
+    "source=${localWorkspaceFolder}/logs,target=/workspace/logs,type=bind",
+    "source=${localWorkspaceFolder}/uploads,target=/workspace/uploads,type=bind"
+  ],
+  "postCreateCommand": "mvn -q -DskipTests verify || true",
+  "remoteUser": "vscode"
+}

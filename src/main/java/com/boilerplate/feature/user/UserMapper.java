@@ -1,5 +1,6 @@
 package com.boilerplate.feature.user;
 
+import com.boilerplate.feature.user.dto.UserDto;
 import org.springframework.stereotype.Component;
 
 @Component

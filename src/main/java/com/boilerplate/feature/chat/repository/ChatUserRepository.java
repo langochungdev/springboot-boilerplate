@@ -8,6 +8,4 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ChatUserRepository extends JpaRepository<ChatUser, ChatUserId> {
-    List<ChatUser> findByUserId(UUID userId);
-    List<ChatUser> findByChatId(UUID chatId);
 }

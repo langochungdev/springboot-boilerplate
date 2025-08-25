@@ -1,4 +1,4 @@
-package com.boilerplate.feature.user;
+package com.boilerplate.feature.user.dto;
 //import com.instar.validation.UniqueEmail;
 //import com.instar.validation.UniqueUsername;
 

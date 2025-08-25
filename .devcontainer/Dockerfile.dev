@@ -1,0 +1,40 @@
+# Base image đã có sẵn JDK 21 và Maven
+# -> đảm bảo môi trường Java đồng bộ cho Spring Boot dev
+FROM mcr.microsoft.com/devcontainers/java:1-21-bullseye
+
+USER root
+ENV DEBIAN_FRONTEND=noninteractive TZ=Asia/Ho_Chi_Minh
+
+# -------------------------------------------------------------------
+# CÀI CÔNG CỤ HỖ TRỢ
+# - curl, gnupg2, apt-transport-https, ca-certificates: tiện ích hệ thống
+# - unixodbc-dev: thư viện ODBC để kết nối SQL Server
+# - redis-tools: công cụ redis-cli để thao tác Redis
+# - git: quản lý source
+# -------------------------------------------------------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl gnupg2 apt-transport-https ca-certificates unixodbc-dev redis-tools git && \
+
+    # ----------------------------------------------------------------
+    # SQL SERVER TOOLS
+    # - Thêm repo Microsoft cho Debian 11
+    # - Cài mssql-tools18 (sqlcmd, bcp)
+    # - Cài msodbcsql18 (ODBC driver cho JDBC/SQL Server)
+    # ----------------------------------------------------------------
+    curl -sSL https://packages.microsoft.com/keys/microsoft.asc \
+      | gpg --dearmor -o /usr/share/keyrings/ms.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/ms.gpg] https://packages.microsoft.com/debian/11/prod bullseye main" \
+      > /etc/apt/sources.list.d/microsoft-prod.list && \
+    apt-get update && ACCEPT_EULA=Y apt-get install -y --no-install-recommends \
+      mssql-tools18 msodbcsql18 && \
+
+    # Thêm symlink để gọi sqlcmd, bcp từ PATH
+    ln -s /opt/mssql-tools18/bin/sqlcmd /usr/local/bin/sqlcmd && \
+    ln -s /opt/mssql-tools18/bin/bcp /usr/local/bin/bcp && \
+    rm -rf /var/lib/apt/lists/*
+
+# Bổ sung PATH cho SQL Server tools
+ENV PATH="$PATH:/opt/mssql-tools18/bin"
+
+# Thư mục làm việc mặc định
+WORKDIR /workspace

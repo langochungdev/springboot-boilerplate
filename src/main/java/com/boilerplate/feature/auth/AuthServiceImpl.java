@@ -5,7 +5,7 @@ import com.boilerplate.common.util.JwtUtil;
 import com.boilerplate.feature.device.Device;
 import com.boilerplate.feature.device.DeviceRepository;
 import com.boilerplate.feature.user.User;
-import com.boilerplate.feature.user.UserDto;
+import com.boilerplate.feature.user.dto.UserDto;
 import com.boilerplate.feature.user.UserMapper;
 import com.boilerplate.feature.user.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -95,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
     public UserDto register(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user = userRepository.save(user);
-        log.info("[AUTH] User mới đăng ký: username={} email={} id={}", user.getUsername(), user.getEmail(), user.getId());
+        log.info("[AUTH] UserError.java mới đăng ký: username={} email={} id={}", user.getUsername(), user.getEmail(), user.getId());
         return userMapper.toDto(user);
     }
 
@@ -104,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             if (token != null && jwtUtil.validateToken(token)) {
                 UUID userId = jwtUtil.extractUserId(token);
-                log.info("[AUTH] User={} yêu cầu logout", userId);
+                log.info("[AUTH] UserError.java={} yêu cầu logout", userId);
 
                 deviceRepository.findAllByUserId(userId).forEach(d -> {
                     d.setIsActive(false);

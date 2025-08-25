@@ -1,5 +1,4 @@
 package com.boilerplate.feature.chat.repository;
-
 import com.boilerplate.feature.chat.entity.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 

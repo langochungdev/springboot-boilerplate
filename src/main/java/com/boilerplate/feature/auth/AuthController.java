@@ -1,6 +1,6 @@
 package com.boilerplate.feature.auth;
 import com.boilerplate.feature.user.User;
-import com.boilerplate.feature.user.UserDto;
+import com.boilerplate.feature.user.dto.UserDto;
 import com.boilerplate.feature.user.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

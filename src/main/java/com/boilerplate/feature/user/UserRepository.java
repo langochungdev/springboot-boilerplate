@@ -6,3 +6,8 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByUsername(String username);
 }
+
+//save(e), findAll(), findById(id), delete(e),
+
+//  @Query("select u from UserError.java u where u.email = :email")
+//  Optional<UserError.java> findByEmail(@Param("email") String email);
