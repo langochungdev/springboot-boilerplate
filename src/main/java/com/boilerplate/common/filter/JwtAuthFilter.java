@@ -49,6 +49,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         System.out.println(request.getRequestURI());
         String token = null;
         UUID userId = null;
+
         String path = request.getRequestURI();
         if (EXCLUDED_PATHS.contains(path)) {
             filterChain.doFilter(request, response);
@@ -57,12 +58,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("token".equals(cookie.getName())) {
-                    token = cookie.getValue();
-                    break;
-                }
-            }
+            token = jwtUtil.getTokenFromCookie(request);
         } else if (token == null) {
             throw new BusinessException(AuthError.MISSING_TOKEN);
         }

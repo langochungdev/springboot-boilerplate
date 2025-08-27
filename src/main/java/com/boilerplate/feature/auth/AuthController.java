@@ -1,9 +1,13 @@
 package com.boilerplate.feature.auth;
+import com.boilerplate.common.util.JwtUtil;
 import com.boilerplate.feature.user.User;
 import com.boilerplate.feature.user.dto.UserDto;
 import com.boilerplate.feature.user.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,30 +15,55 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final UserRepository userRepository;
     private final AuthService authService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest request, HttpServletResponse response) {
-        User e = userRepository.findByUsername(request.getUsername()).orElse(null);
-        if (e != null) {
-            System.out.println("Đăng nhập: " + e.getUsername() + " - " + e.getRole());
-        }
-        return authService.login(request, response);
+    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request) {
+        System.out.println(request.getUsername());
+        AuthResponse authResponse = authService.login(request);
+        String token = jwtUtil.createToken(authResponse.getUser().getUsername(), authResponse.getUser().getId(), authResponse.getUser().getRole());
+
+        ResponseCookie cookie = ResponseCookie.from("token", token)
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(authResponse.getExpiresIn() / 1000)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(authResponse);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@CookieValue(name = "token", required = false) String token, HttpServletResponse response) {
-        return authService.logout(token, response);
+    public ResponseEntity<?> logout(@CookieValue(name = "token", required = false) String token) {
+        authService.logout(token);
+
+        // clear cookie
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+                .path("/")
+                .maxAge(0)
+                .httpOnly(true)
+                .secure(true) // bật true khi chạy HTTPS
+                .sameSite("Strict")
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body("Logout successful");
     }
 
     @PostMapping("/register")
-    public UserDto register(@RequestBody User user) {
-        return authService.register(user);
+    public ResponseEntity<UserDto> register(@Valid @RequestBody RegisterRequest request) {
+        UserDto dto = authService.register(request);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> checkStatus() {
-        return authService.checkStatus();
+    public ResponseEntity<AuthResponse.User> checkStatus() {
+        return ResponseEntity.ok(authService.checkStatus());
     }
+
 }

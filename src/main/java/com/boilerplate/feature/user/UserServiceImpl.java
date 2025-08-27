@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-//    @PreAuthorize("hasRole('ADMIN') or #userId == principal.id")
+//    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     public void changePassword(UUID id, String oldPassword, String newPassword) {
         log.info("Request to change password for userId={}", id);
         User user = userRepository.findById(id).orElseThrow(() -> new BusinessException(AuthError.USER_NOT_FOUND));
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-//    @PreAuthorize("hasRole('ADMIN') or #userId == principal.id")
+//    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     public void verifyAccount(UUID id, String code) {
         User user = userRepository.findById(id).orElse(null);
         if (user == null) return;

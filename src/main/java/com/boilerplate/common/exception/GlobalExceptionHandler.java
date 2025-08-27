@@ -1,4 +1,5 @@
 package com.boilerplate.common.exception;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,18 +15,18 @@ public class GlobalExceptionHandler {
                 ec.getStatus(),
                 ec.getCode(),
                 ex.getMessage(),
-                request.getDescription(false)
+                request.getDescription(false).replace("uri=", "")
         );
         return ResponseEntity.status(ec.getStatus()).body(error);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGeneric(Exception ex, WebRequest request) {
+    public ResponseEntity<ApiError> handleOtherException(Exception ex, WebRequest request) {
         ApiError error = new ApiError(
                 500,
-                "INTERNAL_ERROR",
-                "Có lỗi xảy ra, vui lòng thử lại sau",
-                request.getDescription(false)
+                "INTERNAL_SERVER_ERROR",
+                "Có lỗi xảy ra trong hệ thống",
+                request.getDescription(false).replace("uri=", "")
         );
         return ResponseEntity.status(500).body(error);
     }

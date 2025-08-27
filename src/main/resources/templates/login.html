@@ -2,15 +2,26 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Test Login</title>
+    <title>Test Auth</title>
 </head>
 <body>
+<h2>Test Auth API</h2>
+
 <button onclick="login('admin','123')">Login Admin</button>
 <button onclick="login('user','123')">Login User</button>
-<button onclick="registerUser()">Register New User</button>
 <button onclick="logout()">Logout</button>
+<button onclick="getMe()">/me</button>
 
-<div id="info" style="margin-top:20px;"></div>
+<h3>Register Form</h3>
+<form id="registerForm" onsubmit="registerUser(event)">
+    <input type="text" id="regUsername" placeholder="Username" required><br>
+    <input type="email" id="regEmail" placeholder="Email" required><br>
+    <input type="password" id="regPassword" placeholder="Password" required><br>
+    <input type="text" id="regFullName" placeholder="Full Name"><br>
+    <button type="submit">Register</button>
+</form>
+
+<div id="info" style="margin-top:20px; border:1px solid #ccc; padding:10px;"></div>
 
 <script>
     async function login(username, password) {
@@ -18,30 +29,31 @@
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({username, password}),
-            credentials: "include"   // nhớ kèm cookie HttpOnly
+            credentials: "include"   // gửi + nhận cookie HttpOnly
         });
         if (res.ok) {
             const data = await res.json();
             document.getElementById("info").innerHTML = `
-              <p><b>ID:</b> ${data.user.id}</p>
-              <p><b>Username:</b> ${data.user.username}</p>
-              <p><b>Email:</b> ${data.user.email}</p>
-              <p><b>Full name:</b> ${data.user.fullName}</p>
-              <p><b>Role:</b> ${data.user.role}</p>
-              <p><b>Expires in:</b> ${data.expiresIn}</p>
-            `;
+        <h4>Đăng nhập thành công</h4>
+        <p><b>ID:</b> ${data.user.id}</p>
+        <p><b>Username:</b> ${data.user.username}</p>
+        <p><b>Email:</b> ${data.user.email}</p>
+        <p><b>Full name:</b> ${data.user.fullName}</p>
+        <p><b>Role:</b> ${data.user.role}</p>
+        <p><b>Expires in:</b> ${data.expiresIn}</p>
+      `;
         } else {
             document.getElementById("info").innerHTML = "<p>Đăng nhập thất bại</p>";
         }
     }
 
-    async function registerUser() {
+    async function registerUser(event) {
+        event.preventDefault();
         const user = {
-            username: "test" + Date.now(),
-            password: "123",
-            email: "test@example.com",
-            fullName: "Test User",
-            role: "USER"
+            username: document.getElementById("regUsername").value,
+            password: document.getElementById("regPassword").value,
+            email: document.getElementById("regEmail").value,
+            fullName: document.getElementById("regFullName").value
         };
         const res = await fetch("http://localhost:8080/api/auth/register", {
             method: "POST",
@@ -65,6 +77,26 @@
             document.getElementById("info").innerHTML = "<p>Đã logout</p>";
         } else {
             alert("Logout thất bại");
+        }
+    }
+
+    async function getMe() {
+        const res = await fetch("http://localhost:8080/api/auth/me", {
+            method: "GET",
+            credentials: "include"
+        });
+        if (res.ok) {
+            const data = await res.json();
+            document.getElementById("info").innerHTML = `
+        <h4>Current User (/me)</h4>
+        <p><b>ID:</b> ${data.id}</p>
+        <p><b>Username:</b> ${data.username}</p>
+        <p><b>Email:</b> ${data.email}</p>
+        <p><b>Full name:</b> ${data.fullName}</p>
+        <p><b>Role:</b> ${data.role}</p>
+      `;
+        } else {
+            document.getElementById("info").innerHTML = "<p>Không lấy được user hiện tại</p>";
         }
     }
 </script>

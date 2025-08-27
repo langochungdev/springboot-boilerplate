@@ -1,8 +1,13 @@
 package com.boilerplate.common.exception;
 
-public record ApiError(
-        int status,
-        String code,
-        String message,
-        String path
-) {}
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class ApiError {
+    private int status;
+    private String code;
+    private String message;
+    private String path;
+}

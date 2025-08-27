@@ -18,13 +18,10 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String SECRET;
     private Key key;
-//    private final long REFRESH_EXPIRATION = 604800000; // 7 ngày
     private final long EXPIRATION = 604800000; // 1 giờ = 3600000
-    //khởi tạo bổ sung sau khi spring khởi tạo bean và inject denpen
-    // đảm bảo secret đã được inject tránh null
     @PostConstruct
     public void init() {
-        key = Keys.hmacShaKeyFor(SECRET.getBytes()); //HMAC phương pháp xác thực dữ liệu
+        key = Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
     public String createToken(String username, UUID userId, String role) {
@@ -78,7 +75,6 @@ public class JwtUtil {
         return EXPIRATION;
     }
 
-    // mặc định lấy key sub trong payload
     public UUID extractUserId(String token) {
         String id = Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -98,7 +94,7 @@ public class JwtUtil {
                 .get("username", String.class);
     }
 
-    public String getToken(HttpServletRequest request) {
+    public String getTokenBearer(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);

@@ -1,5 +1,4 @@
 package com.boilerplate.common.exception.errorcode;
-
 import com.boilerplate.common.exception.BaseErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
