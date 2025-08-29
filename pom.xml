@@ -63,12 +63,20 @@
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 
-		<!-- SQL Server JDBC driver -->
+		<!-- SQL Server -->
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+
+		<!-- postgre -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
 
 		<!-- JWT (JJWT). Chỉ api là compile, impl/jackson để runtime -->
 		<dependency>
@@ -93,6 +101,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- DevTools chỉ dùng lúc dev -->
@@ -124,7 +133,6 @@
 		</dependency>
 	</dependencies>
 
-	<!-- Build và plugin -->
 	<build>
 		<!-- Tên file đầu ra -->
 		<finalName>boilerplate</finalName>

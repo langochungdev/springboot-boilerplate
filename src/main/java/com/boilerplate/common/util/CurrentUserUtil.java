@@ -1,7 +1,7 @@
 package com.boilerplate.common.util;
-import com.boilerplate.config.security.CustomUserDetails;
-import com.boilerplate.feature.user.User;
-import com.boilerplate.feature.user.UserRepository;
+import com.boilerplate.infrastructure.security.CustomUserDetails;
+import com.boilerplate.feature.user.entity.User;
+import com.boilerplate.feature.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

@@ -4,7 +4,7 @@ import com.boilerplate.feature.chat.dto.MessageAttachmentDto;
 import com.boilerplate.feature.chat.dto.MessageDto;
 import com.boilerplate.feature.chat.entity.Chat;
 import com.boilerplate.feature.chat.entity.Message;
-import com.boilerplate.feature.user.User;
+import com.boilerplate.feature.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

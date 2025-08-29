@@ -3,7 +3,7 @@ package com.boilerplate.feature.chat.mapper;
 import com.boilerplate.feature.chat.dto.ChatUserDto;
 import com.boilerplate.feature.chat.entity.Chat;
 import com.boilerplate.feature.chat.entity.ChatUser;
-import com.boilerplate.feature.user.User;
+import com.boilerplate.feature.user.entity.User;
 import org.springframework.stereotype.Component;
 @Component
 public class ChatUserMapper {

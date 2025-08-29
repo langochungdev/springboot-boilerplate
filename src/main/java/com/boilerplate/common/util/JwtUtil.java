@@ -1,7 +1,7 @@
 package com.boilerplate.common.util;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.boilerplate.common.exception.BusinessException;
+import com.boilerplate.common.exception.errorcode.AuthError;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
@@ -18,7 +18,7 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String SECRET;
     private Key key;
-    private final long EXPIRATION = 604800000; // 1 giờ = 3600000
+    private final long EXPIRATION = 604800000;
     @PostConstruct
     public void init() {
         key = Keys.hmacShaKeyFor(SECRET.getBytes());
@@ -36,19 +36,6 @@ public class JwtUtil {
                 .compact();
     }
 
-
-//    public String createRefreshToken(String username, String userId, String role) {
-//        return Jwts.builder()
-//                .setSubject(userId)
-//                .claim("username", username)
-//                .claim("role", role)
-//                .setIssuedAt(new Date())
-//                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION))
-//                .signWith(key, SignatureAlgorithm.HS256)
-//                .compact();
-//    }
-
-
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
@@ -58,6 +45,24 @@ public class JwtUtil {
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
+        }
+    }
+    public void validateOrThrow(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+        } catch (ExpiredJwtException ex) {
+            throw new BusinessException(AuthError.INVALID_TOKEN, "Token đã hết hạn");
+        } catch (UnsupportedJwtException ex) {
+            throw new BusinessException(AuthError.INVALID_TOKEN, "Token không được hỗ trợ");
+        } catch (MalformedJwtException ex) {
+            throw new BusinessException(AuthError.INVALID_TOKEN, "Token sai định dạng");
+        } catch (SignatureException ex) {
+            throw new BusinessException(AuthError.INVALID_TOKEN, "Chữ ký token không hợp lệ");
+        } catch (IllegalArgumentException ex) {
+            throw new BusinessException(AuthError.MISSING_TOKEN);
         }
     }
 

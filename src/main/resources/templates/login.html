@@ -7,11 +7,18 @@
 <body>
 <h2>Test Auth API</h2>
 
-<button onclick="login('admin','123')">Login Admin</button>
-<button onclick="login('user','123')">Login User</button>
+<!-- Login Form -->
+<h3>Login Form</h3>
+<form id="loginForm" onsubmit="loginUser(event)">
+    <input type="text" id="loginUsername" placeholder="Username" value="admin" required><br>
+    <input type="text" id="loginPassword" placeholder="Password" value="123" required><br>
+    <button type="submit">Login</button>
+</form>
+
 <button onclick="logout()">Logout</button>
 <button onclick="getMe()">/me</button>
 
+<!-- Register Form -->
 <h3>Register Form</h3>
 <form id="registerForm" onsubmit="registerUser(event)">
     <input type="text" id="regUsername" placeholder="Username" required><br>
@@ -24,24 +31,29 @@
 <div id="info" style="margin-top:20px; border:1px solid #ccc; padding:10px;"></div>
 
 <script>
-    async function login(username, password) {
+    async function loginUser(event) {
+        event.preventDefault();
+        const username = document.getElementById("loginUsername").value;
+        const password = document.getElementById("loginPassword").value;
+
         const res = await fetch("http://localhost:8080/api/auth/login", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({username, password}),
             credentials: "include"   // gửi + nhận cookie HttpOnly
         });
+
         if (res.ok) {
             const data = await res.json();
             document.getElementById("info").innerHTML = `
-        <h4>Đăng nhập thành công</h4>
-        <p><b>ID:</b> ${data.user.id}</p>
-        <p><b>Username:</b> ${data.user.username}</p>
-        <p><b>Email:</b> ${data.user.email}</p>
-        <p><b>Full name:</b> ${data.user.fullName}</p>
-        <p><b>Role:</b> ${data.user.role}</p>
-        <p><b>Expires in:</b> ${data.expiresIn}</p>
-      `;
+                <h4>Đăng nhập thành công</h4>
+                <p><b>ID:</b> ${data.user.id}</p>
+                <p><b>Username:</b> ${data.user.username}</p>
+                <p><b>Email:</b> ${data.user.email}</p>
+                <p><b>Full name:</b> ${data.user.fullName}</p>
+                <p><b>Role:</b> ${data.user.role}</p>
+                <p><b>Expires in:</b> ${data.expiresIn}</p>
+            `;
         } else {
             document.getElementById("info").innerHTML = "<p>Đăng nhập thất bại</p>";
         }
@@ -88,13 +100,13 @@
         if (res.ok) {
             const data = await res.json();
             document.getElementById("info").innerHTML = `
-        <h4>Current User (/me)</h4>
-        <p><b>ID:</b> ${data.id}</p>
-        <p><b>Username:</b> ${data.username}</p>
-        <p><b>Email:</b> ${data.email}</p>
-        <p><b>Full name:</b> ${data.fullName}</p>
-        <p><b>Role:</b> ${data.role}</p>
-      `;
+                <h4>Current User (/me)</h4>
+                <p><b>ID:</b> ${data.id}</p>
+                <p><b>Username:</b> ${data.username}</p>
+                <p><b>Email:</b> ${data.email}</p>
+                <p><b>Full name:</b> ${data.fullName}</p>
+                <p><b>Role:</b> ${data.role}</p>
+            `;
         } else {
             document.getElementById("info").innerHTML = "<p>Không lấy được user hiện tại</p>";
         }

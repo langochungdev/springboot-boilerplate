@@ -1,8 +1,7 @@
 package com.boilerplate.feature.chat.entity;
-import com.boilerplate.feature.user.User;
+import com.boilerplate.feature.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;

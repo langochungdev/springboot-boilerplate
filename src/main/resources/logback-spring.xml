@@ -19,18 +19,6 @@
         </encoder>
     </appender>
 
-    <!-- Chat -->
-    <appender name="CHAT" class="ch.qos.logback.core.FileAppender">
-        <file>${LOG_DIR}/chat.log</file>
-        <append>false</append>
-        <encoder>
-            <pattern>%d %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-    <logger name="com.boilerplate.feature.chat" level="DEBUG" additivity="false">
-        <appender-ref ref="CHAT"/>
-    </logger>
-
     <!-- Auth -->
     <appender name="AUTH" class="ch.qos.logback.core.FileAppender">
         <file>${LOG_DIR}/auth.log</file>
