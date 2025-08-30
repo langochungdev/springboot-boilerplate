@@ -1,5 +1,7 @@
 package com.boilerplate.feature.auth.dto;
 import lombok.*;
+
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -7,6 +9,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class AuthResponse {
+    private String token;
     private Long expiresIn;
     private User user;
 
@@ -19,7 +22,7 @@ public class AuthResponse {
         private String username;
         private String email;
         private String fullName;
-        private String role;
+        private Set<String> roles;
     }
 }
 

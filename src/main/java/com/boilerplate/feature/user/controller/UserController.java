@@ -56,7 +56,7 @@ public class UserController {
 
 
     @GetMapping("/me")
-    public ResponseEntity<AuthResponse.User> checkStatus() {
+    public ResponseEntity<UserDto> checkStatus() {
         return ResponseEntity.ok(userService.checkStatus());
     }
 

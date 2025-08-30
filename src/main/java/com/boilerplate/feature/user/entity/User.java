@@ -1,11 +1,10 @@
 package com.boilerplate.feature.user.entity;
+
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -13,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "app_user")
+@Table(name = "app_users", schema = "dbo")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,7 +38,7 @@ public class User {
     private String bio;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt  = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     private LocalDateTime lastLogin;
 
@@ -49,6 +48,13 @@ public class User {
     @Column(nullable = false)
     private Boolean isVerified = false;
 
-    @Column(nullable = false, length = 20)
-    private String role = "USER";
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            schema = "dbo",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+    )
+    private Set<Role> roles;
+
 }

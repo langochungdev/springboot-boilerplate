@@ -1,2 +1,1 @@
-2025-08-29 17:37:46 DEBUG c.b.common.filter.JwtAuthFilter - Filter 'jwtAuthFilter' configured for use
-2025-08-29 17:37:46 DEBUG c.b.common.filter.HttpLoggingFilter - Filter 'httpLoggingFilterRegistration' configured for use
+2025-08-30 20:09:49 DEBUG c.b.common.filter.JwtAuthFilter - Filter 'jwtAuthFilter' configured for use

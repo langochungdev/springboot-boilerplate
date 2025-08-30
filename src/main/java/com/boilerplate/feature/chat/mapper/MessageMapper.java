@@ -22,7 +22,7 @@ public class MessageMapper {
                 ? e.getAttachments().stream()
                 .map(attachmentMapper::toDto)
                 .collect(Collectors.toList())
-                : null;
+                : List.of();
 
         return MessageDto.builder()
                 .id(e.getId())
@@ -30,7 +30,7 @@ public class MessageMapper {
                 .senderId(e.getSender().getId())
                 .content(e.getContent())
                 .createdAt(e.getCreatedAt())
-                .isRead(e.getIsRead())
+                .isRead(e.isRead())
                 .attachments(attachments)
                 .build();
     }
@@ -42,7 +42,7 @@ public class MessageMapper {
                 .sender(sender)
                 .content(dto.getContent())
                 .createdAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : LocalDateTime.now())
-                .isRead(dto.getIsRead() != null ? dto.getIsRead() : false)
+                .isRead(dto.isRead())
                 .build();
     }
 }

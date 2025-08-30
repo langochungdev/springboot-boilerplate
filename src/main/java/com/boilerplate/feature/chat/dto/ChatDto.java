@@ -12,7 +12,7 @@ import java.util.UUID;
 public class ChatDto {
     private UUID id;
     private String chatName;
-    private Boolean isGroup;
+    private boolean isGroup;
     private LocalDateTime createdAt;
     private UUID createdById;
     private List<UUID> memberIds;

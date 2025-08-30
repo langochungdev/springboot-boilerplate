@@ -27,7 +27,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                     String[] kv = part.trim().split("=");
                     if (kv.length == 2 && kv[0].equals("token")) {
                         String token = kv[1];
-                        if (jwtUtil.validateToken(token)) {
+                        if (jwtUtil.validateOrThrow(token)) {
                             UUID userId = jwtUtil.extractUserId(token);
                             attributes.put("userId", userId);
                         }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 @Component
@@ -24,35 +25,27 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
-    public String createToken(String username, UUID userId, String role) {
+    public String createToken(String username, UUID userId, Set<String> roles) {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .setIssuer("instar")
                 .claim("username", username)
-                .claim("role", role)
+                .claim("roles", roles) // nhiều role
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public boolean validateToken(String token) {
+
+
+    public boolean validateOrThrow(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
-    }
-    public void validateOrThrow(String token) {
-        try {
-            Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token);
         } catch (ExpiredJwtException ex) {
             throw new BusinessException(AuthError.INVALID_TOKEN, "Token đã hết hạn");
         } catch (UnsupportedJwtException ex) {

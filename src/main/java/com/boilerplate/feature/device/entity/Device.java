@@ -1,11 +1,8 @@
 package com.boilerplate.feature.device.entity;
+
 import com.boilerplate.feature.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -22,23 +19,21 @@ public class Device {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(length = 255)
-    private String deviceToken;
+    @Column(name = "device_id", length = 255, nullable = false)
+    private String deviceId;
 
-    @Column( length = 100)
+    @Column(name = "device_name", length = 100, nullable = false)
     private String deviceName;
 
-    @Column(length = 255)
-    private String fingerprint;
-
-    @Column(nullable = false)
+    @Column(name = "last_login", nullable = false)
     private LocalDateTime lastLogin;
 
-    @Column(nullable = false)
+    @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
-
+    @Column(name = "push_token", length = 255)
+    private String pushToken;   // token để gửi push notification (FCM/APNs)
 }

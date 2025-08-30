@@ -1,4 +1,6 @@
-DELETE FROM app_user;
+DELETE FROM user_roles;
+DELETE FROM roles;
+DELETE FROM app_users;
 DELETE FROM chats;
 DELETE FROM chat_users;
 DELETE FROM messages;
@@ -6,14 +8,24 @@ DELETE FROM message_attachments;
 -- DELETE FROM devices;
 -- DELETE FROM notifications;
 -- USERS
-INSERT INTO app_user (id, username, email, password, full_name, avatar_url, bio, created_at, is_active, is_verified, role)
+
+INSERT INTO roles (name) VALUES
+                                 ('ADMIN'),
+                                 ('USER');
+
+INSERT INTO app_users (id, username, email, password, full_name, avatar_url, bio, created_at, is_active, is_verified)
 VALUES
     ('11111111-1111-1111-1111-111111111111', 'admin', 'admin@email.com',
      '$2a$12$.NALdJeDlmXUugMWI2AniO5CbhgsPWm9gDkWxZPA4nj/t118ieHRS',
-     N'La Hung Admin', NULL, N'Chào mọi người!', GETDATE(), 1, 1, 'ADMIN'),
+     N'La Hung Admin', NULL, N'Chào mọi người!', GETDATE(), 1, 1),
     ('22222222-2222-2222-2222-222222222222', 'user', 'user@email.com',
      '$2a$12$.NALdJeDlmXUugMWI2AniO5CbhgsPWm9gDkWxZPA4nj/t118ieHRS',
-     N'La Hung UserError.java', NULL, N'Yêu du lịch', GETDATE(), 1, 1, 'USER');
+     N'La Hung User', NULL, N'Yêu du lịch', GETDATE(), 1, 1);
+
+INSERT INTO user_roles (user_id, role_id) VALUES
+                                              ('11111111-1111-1111-1111-111111111111', 1), -- admin có role ADMIN
+                                              ('11111111-1111-1111-1111-111111111111', 2), -- admin cũng có role USER
+                                              ('22222222-2222-2222-2222-222222222222', 2); -- user có role USER
 
 -- CHATS
 INSERT INTO chats (id, chat_name, is_group, created_by, created_at)
@@ -58,3 +70,4 @@ VALUES
 --     ('77777777-7777-7777-7777-777777777777', '33333333-3333-3333-3333-333333333333', '11111111-1111-1111-1111-111111111111', TRUE),
 --     ('88888888-8888-8888-8888-888888888888', '33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222', FALSE);
 --
+

@@ -6,6 +6,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface DeviceRepository extends JpaRepository<Device, UUID> {
-    Optional<Device> findByUserIdAndFingerprint(UUID userId, String fingerprint);
-    List<Device> findAllByUserId(UUID userId);
+    Optional<Device> findByUserIdAndDeviceId(UUID userId, String deviceId);
 }

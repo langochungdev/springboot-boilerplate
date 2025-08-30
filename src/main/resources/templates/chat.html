@@ -34,14 +34,43 @@
     let stompClient = null;
     let currentUserId = null;
 
+    // --- util ---
+    function generateUUID() {
+        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
+    }
+    function getOrCreateDeviceId() {
+        let id = localStorage.getItem("deviceId");
+        if (!id) {
+            id = generateUUID();
+            localStorage.setItem("deviceId", id);
+        }
+        return id;
+    }
+    function detectDeviceName() {
+        const ua = navigator.userAgent;
+        if (ua.includes("Windows")) return "Web - Windows";
+        if (ua.includes("Mac")) return "Web - MacOS";
+        if (ua.includes("Android")) return "Web - Android";
+        if (ua.includes("iPhone") || ua.includes("iPad")) return "Web - iOS";
+        return "Web - Unknown";
+    }
+
+    let pushToken = "demo-push-token";
+
     async function login() {
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
+        const deviceId = getOrCreateDeviceId();
+        const deviceName = detectDeviceName();
+
+        const payload = {username, password, deviceId, deviceName, pushToken};
 
         const res = await fetch("http://localhost:8080/api/auth/login", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({username, password}),
+            body: JSON.stringify(payload),
             credentials: "include"
         });
 
@@ -49,7 +78,8 @@
             const data = await res.json();
             currentUserId = data.user.id;
             localStorage.setItem("userId", currentUserId);
-            document.getElementById("loginInfo").innerText = "Đăng nhập thành công, userId = " + currentUserId;
+            document.getElementById("loginInfo").innerText =
+                "Đăng nhập thành công, userId = " + currentUserId;
             connectWebSocket();
         } else {
             alert("Login thất bại");
@@ -73,7 +103,7 @@
             if (res.ok) {
                 const chats = await res.json();
                 chats.forEach(chat => {
-                    if (chat.isGroup) {
+                    if (chat.group) {
                         stompClient.subscribe("/topic/" + chat.id, function(message) {
                             appendMsg("Group[" + chat.chatName + "]: " + message.body);
                         });

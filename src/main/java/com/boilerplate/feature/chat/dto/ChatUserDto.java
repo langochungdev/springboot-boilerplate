@@ -10,5 +10,5 @@ import java.util.UUID;
 public class ChatUserDto {
     private UUID chatId;
     private UUID userId;
-    private Boolean isAdmin;
+    private boolean isAdmin;
 }

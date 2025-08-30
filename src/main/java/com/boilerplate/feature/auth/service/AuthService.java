@@ -6,6 +6,6 @@ import com.boilerplate.feature.user.dto.UserDto;
 
 public interface AuthService {
     AuthResponse login(AuthRequest request);
-    void logout(String token);
+    void logout(String token, String fingerprint);
     UserDto register(RegisterRequest request);
 }

@@ -4,6 +4,7 @@ import com.boilerplate.feature.chat.dto.MessageAttachmentDto;
 import com.boilerplate.feature.chat.entity.Message;
 import com.boilerplate.feature.chat.entity.MessageAttachment;
 import org.springframework.stereotype.Component;
+
 @Component
 public class MessageAttachmentMapper {
     public MessageAttachmentDto toDto(MessageAttachment e) {
@@ -24,4 +25,3 @@ public class MessageAttachmentMapper {
                 .build();
     }
 }
-

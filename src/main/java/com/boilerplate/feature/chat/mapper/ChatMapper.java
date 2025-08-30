@@ -15,12 +15,12 @@ public class ChatMapper {
                 ? chat.getChatUsers().stream()
                 .map(cu -> cu.getUser().getId())
                 .collect(Collectors.toList())
-                : null;
+                : List.of();
 
         return ChatDto.builder()
                 .id(chat.getId())
                 .chatName(chat.getChatName())
-                .isGroup(chat.getIsGroup())
+                .isGroup(chat.isGroup())
                 .createdAt(chat.getCreatedAt())
                 .createdById(chat.getCreatedBy() != null ? chat.getCreatedBy().getId() : null)
                 .memberIds(memberIds)

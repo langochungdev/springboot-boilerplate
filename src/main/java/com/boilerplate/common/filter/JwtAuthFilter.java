@@ -60,9 +60,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
             String token = jwtUtil.getTokenFromCookie(request);
-            if (token == null) {
-                throw new BusinessException(AuthError.MISSING_TOKEN);
-            }
             jwtUtil.validateOrThrow(token);
 
             if (tokenBlacklistService.isTokenBlacklisted(token)) {
@@ -81,8 +78,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         user.getUsername(),
                         user.getPassword(),
                         user.getIsActive(),
-                        List.of(new SimpleGrantedAuthority(user.getRole()))
+                        user.getRoles().stream()
+                                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                                .toList()
                 );
+
 
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(

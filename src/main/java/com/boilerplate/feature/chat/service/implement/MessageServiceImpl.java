@@ -42,15 +42,5 @@ public class MessageServiceImpl implements MessageService {
         e = messageRepository.save(e);
         return messageMapper.toDto(e);
     }
-
-    @Override
-    public List<MessageDto> getConversations(UUID chatId) {
-        chatRepository.findById(chatId)
-                .orElseThrow(() -> new EntityNotFoundException("Chat not found: " + chatId));
-
-        return messageRepository.findByChatIdOrderByCreatedAtAsc(chatId).stream()
-                .map(messageMapper::toDto)
-                .collect(Collectors.toList());
-    }
 }
 

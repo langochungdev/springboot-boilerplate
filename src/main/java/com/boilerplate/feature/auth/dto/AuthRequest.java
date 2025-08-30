@@ -11,7 +11,7 @@ public class AuthRequest {
     private String username;
     @NotBlank
     private String password;
-    private String deviceToken;
+    private String deviceId;
     private String deviceName;
-    private String fingerprint;
+    private String pushToken;
 }

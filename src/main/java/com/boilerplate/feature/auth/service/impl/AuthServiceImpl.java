@@ -2,14 +2,14 @@ package com.boilerplate.feature.auth.service.impl;
 import com.boilerplate.common.exception.BusinessException;
 import com.boilerplate.common.exception.errorcode.AuthError;
 import com.boilerplate.common.service.TokenBlacklistService;
-import com.boilerplate.common.util.CurrentUserUtil;
 import com.boilerplate.common.util.JwtUtil;
 import com.boilerplate.feature.auth.dto.RegisterRequest;
 import com.boilerplate.feature.auth.dto.AuthRequest;
 import com.boilerplate.feature.auth.dto.AuthResponse;
 import com.boilerplate.feature.auth.service.AuthService;
-import com.boilerplate.feature.device.entity.Device;
 import com.boilerplate.feature.device.repository.DeviceRepository;
+import com.boilerplate.feature.device.service.DeviceService;
+import com.boilerplate.feature.user.entity.Role;
 import com.boilerplate.feature.user.entity.User;
 import com.boilerplate.feature.user.dto.UserDto;
 import com.boilerplate.feature.user.mapper.UserMapper;
@@ -17,8 +17,11 @@ import com.boilerplate.feature.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
+
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -30,8 +33,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final TokenBlacklistService tokenBlacklistService;
-    private final CurrentUserUtil currentUserUtil;
-    private final DeviceRepository deviceRepository;
+    private final DeviceService deviceService;
 
     @Override
     public AuthResponse login(AuthRequest request) {
@@ -42,56 +44,51 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(AuthError.PASSWORD_NOT_MATCH);
         }
 
-        Device device = deviceRepository
-                .findByUserIdAndFingerprint(user.getId(), request.getFingerprint())
-                .orElse(Device.builder()
-                        .user(user)
-                        .fingerprint(request.getFingerprint())
-                        .build());
+        deviceService.handleLoginDevice(user, request);
+        Set<String> roles = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
 
-        device.setDeviceToken(request.getDeviceToken());
-        device.setDeviceName(request.getDeviceName());
-        device.setLastLogin(LocalDateTime.now());
-        device.setIsActive(true);
-        deviceRepository.save(device);
-
-        long expiresIn = jwtUtil.getExpiration();
+        User u = userRepository.findByUsername("admin").orElseThrow();
+        System.out.println(">>> Roles from repo: " + u.getRoles());
 
         AuthResponse.User dto = AuthResponse.User.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .fullName(user.getFullName())
                 .email(user.getEmail())
-                .role(user.getRole())
+                .roles(roles)
                 .build();
 
-        log.info("[AUTH] Login thành công: user={} id={} role={} device={}",
-                user.getUsername(), user.getId(), user.getRole(), request.getDeviceName());
+        log.info("[AUTH] Login thành công: user={} id={} roles={} device={}",
+                user.getUsername(), user.getId(), roles, request.getDeviceName());
+
+        long expiresIn = jwtUtil.getExpiration();
+        String token = jwtUtil.createToken(dto.getUsername(), dto.getId(), roles);
 
         return AuthResponse.builder()
+                .token(token)
                 .expiresIn(expiresIn)
                 .user(dto)
                 .build();
     }
 
+
     @Override
-    public void logout(String token) {
+    public void logout(String token, String deviceId) {
         try {
-            if (token != null && jwtUtil.validateToken(token)) {
+            if (token != null && jwtUtil.validateOrThrow(token)) {
                 UUID userId = jwtUtil.extractUserId(token);
 
-                deviceRepository.findAllByUserId(userId).forEach(d -> {
-                    d.setIsActive(false);
-                    deviceRepository.save(d);
-                });
+                deviceService.deactivateDevice(userId, deviceId);
 
                 long ttlMs = jwtUtil.getExpirationFromToken(token) - System.currentTimeMillis();
                 if (ttlMs > 0) {
                     tokenBlacklistService.blacklistToken(token, ttlMs);
                 }
 
-                log.info("[AUTH] Logout thành công user={}, devices deactivated={}, blacklisted={}",
-                        userId, true, ttlMs > 0);
+                log.info("[AUTH] Logout thành công user={}, device deactivated={}, blacklisted={}",
+                        userId, deviceId, ttlMs > 0);
             }
         } catch (Exception e) {
             log.error("[AUTH] Lỗi khi logout: {}", e.getMessage(), e);

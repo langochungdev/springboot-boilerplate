@@ -1,6 +1,4 @@
 package com.boilerplate.feature.user.dto;
-//import com.instar.validation.UniqueEmail;
-//import com.instar.validation.UniqueUsername;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -16,9 +15,7 @@ import java.util.UUID;
 @Builder
 public class UserDto {
     private UUID id;
-//    @UniqueUsername
     private String username;
-//    @UniqueEmail
     private String email;
     private String fullName;
     private String avatarUrl;
@@ -27,5 +24,5 @@ public class UserDto {
     private LocalDateTime lastLogin;
     private Boolean isActive;
     private Boolean isVerified;
-    private String role = "USER";
+    private Set<String> roles;
 }

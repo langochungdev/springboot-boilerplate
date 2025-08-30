@@ -3,7 +3,6 @@ package com.boilerplate.feature.chat.entity;
 import com.boilerplate.feature.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.UUID;
 
 @Entity
@@ -23,6 +22,6 @@ public class ChatUser {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "is_admin")
-    private Boolean isAdmin = false;
+    @Column(name = "is_admin", nullable = false)
+    private boolean isAdmin;
 }

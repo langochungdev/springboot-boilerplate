@@ -24,7 +24,7 @@ public class ChatRestController {
     public ResponseEntity<List<ChatDto>> getMyChats() {
         UUID currentUserId = CurrentUserUtil.getCurrentUserId();
 
-        List<ChatDto> chats = chatRepository.findByUserId(currentUserId)
+        List<ChatDto> chats = chatRepository.findByUserIdWithUsers(currentUserId)
                 .stream()
                 .map(chatMapper::toDto)
                 .collect(Collectors.toList());

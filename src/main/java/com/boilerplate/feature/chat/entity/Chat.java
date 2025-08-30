@@ -1,4 +1,5 @@
 package com.boilerplate.feature.chat.entity;
+
 import com.boilerplate.feature.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,15 +20,20 @@ public class Chat {
     private String chatName;
 
     @Column(name = "is_group", nullable = false)
-    private Boolean isGroup;
+    private boolean isGroup;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "created_by")
     private User createdBy;
 
-    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ChatUser> chatUsers;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

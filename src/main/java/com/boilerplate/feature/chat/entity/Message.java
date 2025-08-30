@@ -3,7 +3,6 @@ package com.boilerplate.feature.chat.entity;
 import com.boilerplate.feature.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -28,12 +27,18 @@ public class Message {
     @Column(length = 500)
     private String content;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @Column(name = "is_read", nullable = false)
-    private Boolean isRead = false;
+    private boolean isRead;
 
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MessageAttachment> attachments;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.isRead = false;
+    }
 }

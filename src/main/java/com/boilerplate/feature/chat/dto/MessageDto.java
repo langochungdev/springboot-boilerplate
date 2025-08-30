@@ -16,6 +16,6 @@ public class MessageDto {
     private UUID receiverId; // chỉ dùng cho private chat
     private String content;
     private LocalDateTime createdAt;
-    private Boolean isRead;
+    private boolean isRead;
     private List<MessageAttachmentDto> attachments;
 }

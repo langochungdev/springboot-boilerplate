@@ -1,5 +1,4 @@
 package com.boilerplate.feature.auth.controller;
-import com.boilerplate.common.util.JwtUtil;
 import com.boilerplate.feature.auth.dto.AuthRequest;
 import com.boilerplate.feature.auth.dto.AuthResponse;
 import com.boilerplate.feature.auth.service.AuthService;
@@ -17,15 +16,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request) {
         System.out.println(request.getUsername());
         AuthResponse authResponse = authService.login(request);
-        String token = jwtUtil.createToken(authResponse.getUser().getUsername(), authResponse.getUser().getId(), authResponse.getUser().getRole());
 
-        ResponseCookie cookie = ResponseCookie.from("token", token)
+        ResponseCookie cookie = ResponseCookie.from("token", authResponse.getToken())
                 .httpOnly(true)
                 .secure(false)
                 .sameSite("Lax")
@@ -39,8 +36,11 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@CookieValue(name = "token", required = false) String token) {
-        authService.logout(token);
+    public ResponseEntity<?> logout(
+            @CookieValue(name = "token", required = false) String token,
+            @RequestHeader(name = "X-Device-Id", required = false) String deviceId
+    ) {
+        authService.logout(token, deviceId);
 
         ResponseCookie cookie = ResponseCookie.from("token", "")
                 .path("/")

@@ -1,6 +1,4 @@
 package com.boilerplate.feature.chat.service.implement;
-import com.boilerplate.common.exception.BusinessException;
-import com.boilerplate.common.exception.errorcode.ChatError;
 import com.boilerplate.feature.chat.dto.MessageDto;
 import com.boilerplate.feature.chat.entity.Chat;
 import com.boilerplate.feature.chat.entity.ChatUser;
@@ -54,7 +52,7 @@ public class ChatServiceImpl implements ChatService {
 
         dto.setChatId(chat.getId());
         dto.setCreatedAt(LocalDateTime.now());
-        dto.setIsRead(false);
+        dto.setRead(false);
 
         // dùng lại messageService để lưu
         MessageDto saved = messageService.save(dto);
@@ -73,18 +71,18 @@ public class ChatServiceImpl implements ChatService {
         User sender = userRepository.findById(dto.getSenderId()).orElseThrow();
         Chat chat = chatRepository.findById(dto.getChatId()).orElseThrow();
 
-        if (!chat.getIsGroup()) {
+        if (!chat.isGroup()) {
             throw new IllegalArgumentException("Chat này không phải group");
         }
 
         boolean isMember = chat.getChatUsers().stream()
                 .anyMatch(cu -> cu.getUser().getId().equals(sender.getId()));
         if (!isMember) {
-            throw new BusinessException(ChatError.IS_NOT_MEMBER);
+            throw new IllegalArgumentException("ko phải thành viên");
         }
 
         dto.setCreatedAt(LocalDateTime.now());
-        dto.setIsRead(false);
+        dto.setRead(false);
 
         MessageDto saved = messageService.save(dto);
 
