@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "messages")
+@Table(name = "messages", schema = "dbo")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor @Builder
 public class Message {
@@ -27,10 +27,12 @@ public class Message {
     @Column(length = 500)
     private String content;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    // sửa: thêm default getdate()
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "datetime2 default getdate()")
     private LocalDateTime createdAt;
 
-    @Column(name = "is_read", nullable = false)
+    // sửa: thêm default 0
+    @Column(name = "is_read", nullable = false, columnDefinition = "bit default 0")
     private boolean isRead;
 
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)

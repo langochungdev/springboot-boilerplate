@@ -2,17 +2,15 @@ package com.boilerplate.feature.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "app_users", schema = "dbo")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,7 +23,8 @@ public class User {
     @Column(unique = true, nullable = false, length = 100)
     private String email;
 
-    @Column(nullable = false, length = 100)
+    // sửa: tăng length từ 100 -> 255
+    @Column(nullable = false, length = 255)
     private String password;
 
     @Column(nullable = false, length = 100)
@@ -37,8 +36,9 @@ public class User {
     @Column(length = 255)
     private String bio;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    // sửa: thêm default getdate()
+    @Column(nullable = false, updatable = false, columnDefinition = "datetime2 default getdate()")
+    private LocalDateTime createdAt;
 
     private LocalDateTime lastLogin;
 
@@ -48,13 +48,12 @@ public class User {
     @Column(nullable = false)
     private Boolean isVerified = false;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            schema = "dbo",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
-    )
-    private Set<Role> roles;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Set<UserRole> userRoles;
 
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

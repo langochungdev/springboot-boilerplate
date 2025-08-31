@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "chats")
+@Table(name = "chats", schema = "dbo")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor @Builder
 public class Chat {
@@ -22,7 +22,8 @@ public class Chat {
     @Column(name = "is_group", nullable = false)
     private boolean isGroup;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    // sửa: thêm default getdate()
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "datetime2 default getdate()")
     private LocalDateTime createdAt;
 
     @ManyToOne

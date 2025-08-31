@@ -1,4 +1,5 @@
 package com.boilerplate.feature.user.service.impl;
+import com.boilerplate.common.exception.BusinessException;
 import com.boilerplate.common.util.CurrentUserUtil;
 import com.boilerplate.feature.auth.dto.AuthResponse;
 import com.boilerplate.feature.user.dto.UserDto;
@@ -8,8 +9,10 @@ import com.boilerplate.feature.user.repository.UserRepository;
 import com.boilerplate.feature.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -44,8 +47,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDto checkStatus() {
-        User user = currentUserUtil.getUser();
+        UUID userId = currentUserUtil.getCurrentUserId(); // viết thêm hàm trả về id thay vì User
+        User user = userRepository.findByIdWithRoles(userId)
+                .orElseThrow(null);
         return userMapper.toDto(user);
     }
+
+
+
+
+
 }

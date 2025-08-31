@@ -19,10 +19,11 @@ public class ChatRestController {
 
     private final ChatRepository chatRepository;
     private final ChatMapper chatMapper;
+    private final CurrentUserUtil currentUserUtil;
 
     @GetMapping("/my")
     public ResponseEntity<List<ChatDto>> getMyChats() {
-        UUID currentUserId = CurrentUserUtil.getCurrentUserId();
+        UUID currentUserId = currentUserUtil.getCurrentUserId();
 
         List<ChatDto> chats = chatRepository.findByUserIdWithUsers(currentUserId)
                 .stream()
