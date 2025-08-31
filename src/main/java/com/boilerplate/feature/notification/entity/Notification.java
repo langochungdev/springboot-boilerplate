@@ -1,4 +1,5 @@
 package com.boilerplate.feature.notification.entity;
+
 import com.boilerplate.feature.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "notifications")
+@Table(name = "notifications", schema = "dbo")
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -34,10 +35,11 @@ public class Notification {
     @Column(length = 255)
     private String link;
 
-    @Column(nullable = false)
+    // sửa: thêm default 0
+    @Column(nullable = false, columnDefinition = "bit default 0")
     private Boolean isRead = false;
 
-    @Column(nullable = false)
+    // sửa: thêm default getdate()
+    @Column(nullable = false, columnDefinition = "datetime2 default getdate()")
     private LocalDateTime createdAt;
-
 }

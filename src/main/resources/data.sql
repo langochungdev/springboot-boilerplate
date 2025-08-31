@@ -1,17 +1,16 @@
-DELETE FROM user_roles;
-DELETE FROM roles;
-DELETE FROM app_users;
-DELETE FROM chats;
-DELETE FROM chat_users;
-DELETE FROM messages;
-DELETE FROM message_attachments;
--- DELETE FROM devices;
--- DELETE FROM notifications;
--- USERS
-
+--
+-- DELETE FROM user_roles;
+-- -- DELETE FROM devices;
+-- -- DELETE FROM notifications;
+-- DELETE FROM roles;
+-- DELETE FROM app_users;
+-- DELETE FROM message_attachments;
+-- DELETE FROM messages;
+-- DELETE FROM chat_users;
+-- DELETE FROM chats;
 INSERT INTO roles (name) VALUES
-                                 ('ADMIN'),
-                                 ('USER');
+                             ('ADMIN'),
+                             ('USER');
 
 INSERT INTO app_users (id, username, email, password, full_name, avatar_url, bio, created_at, is_active, is_verified)
 VALUES
@@ -22,10 +21,10 @@ VALUES
      '$2a$12$.NALdJeDlmXUugMWI2AniO5CbhgsPWm9gDkWxZPA4nj/t118ieHRS',
      N'La Hung User', NULL, N'Yêu du lịch', GETDATE(), 1, 1);
 
-INSERT INTO user_roles (user_id, role_id) VALUES
-                                              ('11111111-1111-1111-1111-111111111111', 1), -- admin có role ADMIN
-                                              ('11111111-1111-1111-1111-111111111111', 2), -- admin cũng có role USER
-                                              ('22222222-2222-2222-2222-222222222222', 2); -- user có role USER
+INSERT INTO user_roles (id, user_id, role_id) VALUES
+                                                  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', 1), -- admin có role ADMIN
+                                                  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '11111111-1111-1111-1111-111111111111', 2), -- admin cũng có role USER
+                                                  ('cccccccc-cccc-cccc-cccc-cccccccccccc', '22222222-2222-2222-2222-222222222222', 2); -- user có role USER
 
 -- CHATS
 INSERT INTO chats (id, chat_name, is_group, created_by, created_at)

@@ -1,0 +1,2 @@
+2025-08-31 18:50:40,086 INFO  c.b.f.a.service.impl.AuthServiceImpl - [AUTH] Login thành công: user=admin id=11111111-1111-1111-1111-111111111111 roles=[ADMIN, USER] device=Web - Windows
+2025-08-31 18:50:45,305 INFO  c.b.f.a.service.impl.AuthServiceImpl - [AUTH] Login thành công: user=admin id=11111111-1111-1111-1111-111111111111 roles=[ADMIN, USER] device=Web - Windows

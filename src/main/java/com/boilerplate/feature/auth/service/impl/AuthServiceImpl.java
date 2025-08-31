@@ -45,12 +45,10 @@ public class AuthServiceImpl implements AuthService {
         }
 
         deviceService.handleLoginDevice(user, request);
-        Set<String> roles = user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
 
-        User u = userRepository.findByUsername("admin").orElseThrow();
-        System.out.println(">>> Roles from repo: " + u.getRoles());
+        Set<String> roles = user.getUserRoles().stream()
+                .map(ur -> ur.getRole().getName())
+                .collect(Collectors.toSet());
 
         AuthResponse.User dto = AuthResponse.User.builder()
                 .id(user.getId())

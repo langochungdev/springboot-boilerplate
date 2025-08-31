@@ -1,10 +1,8 @@
 package com.boilerplate.feature.user.dto;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
