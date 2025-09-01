@@ -1,33 +1,24 @@
 package com.boilerplate.feature.notification.mapper;
-
 import com.boilerplate.feature.notification.dto.NotificationDto;
 import com.boilerplate.feature.notification.entity.Notification;
 import com.boilerplate.feature.user.entity.User;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import java.util.UUID;
 
-@Component
-public class NotificationMapper {
-    public NotificationDto toDto(Notification e) {
-        return NotificationDto.builder()
-                .id(e.getId())
-                .userId(e.getUser().getId())
-                .type(e.getType())
-                .message(e.getMessage())
-                .link(e.getLink())
-                .isRead(e.getIsRead())
-                .createdAt(e.getCreatedAt())
-                .build();
-    }
+@Mapper(componentModel = "spring")
+public interface NotificationMapper {
 
-    public Notification toEntity(NotificationDto dto, User user) {
-        return Notification.builder()
-                .id(dto.getId())
-                .user(user)
-                .type(dto.getType())
-                .message(dto.getMessage())
-                .link(dto.getLink())
-                .isRead(dto.getIsRead())
-                .createdAt(dto.getCreatedAt())
-                .build();
+    @Mapping(target = "userId", source = "user.id")
+    NotificationDto toDto(Notification e);
+
+    @Mapping(target = "user", source = "userId")
+    Notification toEntity(NotificationDto dto);
+
+    default User map(UUID userId) {
+        if (userId == null) return null;
+        User u = new User();
+        u.setId(userId);
+        return u;
     }
 }

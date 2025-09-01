@@ -2,17 +2,17 @@ package com.boilerplate.feature.chat.service.implement;
 import com.boilerplate.feature.chat.dto.MessageDto;
 import com.boilerplate.feature.chat.entity.Chat;
 import com.boilerplate.feature.chat.entity.ChatUser;
+import com.boilerplate.feature.chat.mapper.MessageMapper;
 import com.boilerplate.feature.chat.repository.ChatRepository;
 import com.boilerplate.feature.chat.repository.ChatUserRepository;
+import com.boilerplate.feature.chat.repository.MessageRepository;
 import com.boilerplate.feature.chat.service.ChatService;
-import com.boilerplate.feature.chat.service.MessageService;
 import com.boilerplate.feature.user.entity.User;
 import com.boilerplate.feature.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,7 +23,8 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
     private final ChatUserRepository chatUserRepository;
     private final UserRepository userRepository;
-    private final MessageService messageService;
+    private final MessageRepository messageRepository;
+    private final MessageMapper messageMapper;
 
     @Override
     public void sendPrivateMessage(MessageDto dto) {
@@ -54,14 +55,11 @@ public class ChatServiceImpl implements ChatService {
         dto.setCreatedAt(LocalDateTime.now());
         dto.setRead(false);
 
-        // dùng lại messageService để lưu
-        MessageDto saved = messageService.save(dto);
-
-        // gửi tới receiver qua websocket
+        messageRepository.save(messageMapper.toEntity(dto, sender, chat));
         messagingTemplate.convertAndSendToUser(
                 receiver.getId().toString(),
                 "/queue/messages",
-                saved
+                dto
         );
     }
 
@@ -84,11 +82,10 @@ public class ChatServiceImpl implements ChatService {
         dto.setCreatedAt(LocalDateTime.now());
         dto.setRead(false);
 
-        MessageDto saved = messageService.save(dto);
-
+        messageRepository.save(messageMapper.toEntity(dto, sender, chat));
         messagingTemplate.convertAndSend(
                 "/topic/" + chat.getId(),
-                saved
+                dto
         );
     }
 }

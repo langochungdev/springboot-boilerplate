@@ -23,7 +23,6 @@ public class User {
     @Column(unique = true, nullable = false, length = 100)
     private String email;
 
-    // sửa: tăng length từ 100 -> 255
     @Column(nullable = false, length = 255)
     private String password;
 
@@ -36,7 +35,6 @@ public class User {
     @Column(length = 255)
     private String bio;
 
-    // sửa: thêm default getdate()
     @Column(nullable = false, updatable = false, columnDefinition = "datetime2 default getdate()")
     private LocalDateTime createdAt;
 

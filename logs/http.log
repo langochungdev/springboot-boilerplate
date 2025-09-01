@@ -1,1 +1,1 @@
-2025-08-31 18:50:34 DEBUG c.b.common.filter.JwtAuthFilter - Filter 'jwtAuthFilter' configured for use
+{"@timestamp":"2025-09-01T17:47:54.4058014+07:00","@version":"1","message":"Filter 'jwtAuthFilter' configured for use","logger_name":"com.boilerplate.common.filter.JwtAuthFilter","thread_name":"restartedMain","level":"DEBUG","level_value":10000}

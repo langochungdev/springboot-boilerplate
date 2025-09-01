@@ -44,7 +44,13 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(AuthError.PASSWORD_NOT_MATCH);
         }
 
-        deviceService.handleLoginDevice(user, request);
+        deviceService.handleLoginDevice(
+                user.getId(),
+                request.getDeviceId(),
+                request.getDeviceName(),
+                request.getPushToken()
+        );
+
 
         Set<String> roles = user.getUserRoles().stream()
                 .map(ur -> ur.getRole().getName())

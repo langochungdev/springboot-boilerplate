@@ -1,2 +1,1 @@
-2025-08-31 18:50:40,086 INFO  c.b.f.a.service.impl.AuthServiceImpl - [AUTH] Login thành công: user=admin id=11111111-1111-1111-1111-111111111111 roles=[ADMIN, USER] device=Web - Windows
-2025-08-31 18:50:45,305 INFO  c.b.f.a.service.impl.AuthServiceImpl - [AUTH] Login thành công: user=admin id=11111111-1111-1111-1111-111111111111 roles=[ADMIN, USER] device=Web - Windows
+{"@timestamp":"2025-09-01T17:48:08.5885354+07:00","@version":"1","message":"[AUTH] Login thành công: user=admin id=11111111-1111-1111-1111-111111111111 roles=[ADMIN, USER] device=Web - Windows","logger_name":"com.boilerplate.feature.auth.service.impl.AuthServiceImpl","thread_name":"http-nio-0.0.0.0-8080-exec-5","level":"INFO","level_value":20000,"traceId":"e8ef9ebb-d2a9-402d-a3dc-8e61ca31e0f9"}

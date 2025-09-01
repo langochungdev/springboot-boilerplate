@@ -13,7 +13,7 @@ public class MessageDto {
     private UUID id;
     private UUID chatId;
     private UUID senderId;
-    private UUID receiverId; // chỉ dùng cho private chat
+    private UUID receiverId;
     private String content;
     private LocalDateTime createdAt;
     private boolean isRead;

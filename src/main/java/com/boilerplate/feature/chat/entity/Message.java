@@ -27,11 +27,9 @@ public class Message {
     @Column(length = 500)
     private String content;
 
-    // sửa: thêm default getdate()
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "datetime2 default getdate()")
     private LocalDateTime createdAt;
 
-    // sửa: thêm default 0
     @Column(name = "is_read", nullable = false, columnDefinition = "bit default 0")
     private boolean isRead;
 

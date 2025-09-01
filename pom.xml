@@ -132,18 +132,6 @@
 			<version>2.5.0</version>
 		</dependency>
 
-		<!-- mapper -->
-		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct</artifactId>
-			<version>1.6.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct-processor</artifactId>
-			<version>1.6.0</version>
-			<scope>provided</scope>
-		</dependency>
 		<!--flyway-->
 		<dependency>
 			<groupId>org.flywaydb</groupId>
@@ -155,6 +143,24 @@
 			<version>11.11.2</version>
 		</dependency>
 
+		<!-- mapstruct -->
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>1.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct-processor</artifactId>
+			<version>1.6.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<!--json log-->
+		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+			<version>7.4</version>
+		</dependency>
 
 	</dependencies>
 
@@ -174,6 +180,11 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
+						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>1.6.0</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>

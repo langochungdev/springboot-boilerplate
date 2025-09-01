@@ -1,5 +1,4 @@
 package com.boilerplate.feature.device.entity;
-
 import com.boilerplate.feature.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,5 +34,5 @@ public class Device {
     private Boolean isActive = true;
 
     @Column(name = "push_token", length = 255)
-    private String pushToken;   // token để gửi push notification (FCM/APNs)
+    private String pushToken;
 }
