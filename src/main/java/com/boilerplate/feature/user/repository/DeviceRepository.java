@@ -1,6 +1,8 @@
-package com.boilerplate.feature.device.repository;
-import com.boilerplate.feature.device.entity.Device;
+package com.boilerplate.feature.user.repository;
+
+import com.boilerplate.feature.user.entity.Device;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.Optional;
 import java.util.UUID;
 

@@ -22,7 +22,6 @@ import com.boilerplate.common.exception.BusinessException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 

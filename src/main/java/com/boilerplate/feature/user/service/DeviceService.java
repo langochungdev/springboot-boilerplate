@@ -1,4 +1,4 @@
-package com.boilerplate.feature.device.service;
+package com.boilerplate.feature.user.service;
 import java.util.UUID;
 
 public interface DeviceService {

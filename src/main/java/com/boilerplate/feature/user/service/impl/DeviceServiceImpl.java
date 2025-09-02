@@ -1,11 +1,13 @@
-package com.boilerplate.feature.device.service.impl;
-import com.boilerplate.feature.device.entity.Device;
-import com.boilerplate.feature.device.repository.DeviceRepository;
-import com.boilerplate.feature.device.service.DeviceService;
+package com.boilerplate.feature.user.service.impl;
+
+import com.boilerplate.feature.user.entity.Device;
+import com.boilerplate.feature.user.repository.DeviceRepository;
+import com.boilerplate.feature.user.service.DeviceService;
 import com.boilerplate.feature.user.entity.User;
 import com.boilerplate.feature.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
