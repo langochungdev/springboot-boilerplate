@@ -1,7 +1,9 @@
 package com.boilerplate.infrastructure.security;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,11 +15,15 @@ import java.util.UUID;
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class CustomUserDetails implements UserDetails {
     private UUID id;
     private String username;
     private String password;
+    private String email;
+    private String fullName;
     private boolean enabled;
+    private boolean verified;
     private Collection<? extends GrantedAuthority> authorities;
 
     @Override
@@ -42,6 +48,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return enabled && verified;
     }
 }

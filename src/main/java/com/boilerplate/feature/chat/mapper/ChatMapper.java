@@ -1,9 +1,7 @@
 package com.boilerplate.feature.chat.mapper;
-
 import com.boilerplate.feature.chat.dto.ChatDto;
 import com.boilerplate.feature.chat.entity.Chat;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;

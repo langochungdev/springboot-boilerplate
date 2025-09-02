@@ -111,7 +111,6 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("[AUTH] User mới đăng ký: username={} email={} id={}",
                 user.getUsername(), user.getEmail(), user.getId());
-
         return userMapper.toDto(user);
     }
 }

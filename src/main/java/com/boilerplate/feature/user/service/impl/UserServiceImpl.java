@@ -27,10 +27,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changePassword(UUID id, String oldPassword, String newPassword) {
-        log.info("Request to change password for userId={}", id);
         User user = userRepository.findById(id).orElse(null);
         if (user == null){
-            log.warn("User with id={} not found, cannot change password", id);
             return;
         }
         user.setPassword(passwordEncoder.encode(newPassword));
@@ -49,14 +47,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserDto checkStatus() {
-        UUID userId = currentUserUtil.getCurrentUserId(); // viết thêm hàm trả về id thay vì User
+        UUID userId = currentUserUtil.getCurrentUserId();
         User user = userRepository.findByIdWithRoles(userId)
                 .orElseThrow(null);
         return userMapper.toDto(user);
     }
-
-
-
-
-
 }

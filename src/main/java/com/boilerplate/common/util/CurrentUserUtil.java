@@ -1,5 +1,4 @@
 package com.boilerplate.common.util;
-
 import com.boilerplate.infrastructure.security.CustomUserDetails;
 import com.boilerplate.feature.user.entity.User;
 import com.boilerplate.feature.user.repository.UserRepository;
@@ -7,13 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-
 import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class CurrentUserUtil {
-
     private final UserRepository userRepository;
 
     public CustomUserDetails getCurrentUser() {
@@ -32,13 +29,6 @@ public class CurrentUserUtil {
         CustomUserDetails user = getCurrentUser();
         System.out.println(user.getId());
         return user != null ? user.getId() : null;
-    }
-
-    public boolean isAdmin() {
-        CustomUserDetails user = getCurrentUser();
-        if (user == null) return false;
-        return user.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")); // nên chuẩn hoá ROLE_
     }
 
     public User getUser() {

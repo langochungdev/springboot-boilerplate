@@ -7,7 +7,6 @@ import com.boilerplate.feature.user.entity.User;
 import com.boilerplate.feature.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,11 +76,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         user.getId(),
                         user.getUsername(),
                         user.getPassword(),
+                        user.getEmail(),
+                        user.getFullName(),
                         user.getIsActive(),
+                        user.getIsVerified(),
                         user.getUserRoles().stream()
-                                .map(ur -> new SimpleGrantedAuthority(ur.getRole().getName()))
+                                .map(ur -> new SimpleGrantedAuthority("ROLE_" + ur.getRole().getName()))
                                 .toList()
                 );
+
 
 
 

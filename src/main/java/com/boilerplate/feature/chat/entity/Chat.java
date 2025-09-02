@@ -22,7 +22,6 @@ public class Chat {
     @Column(name = "is_group", nullable = false)
     private boolean isGroup;
 
-    // sửa: thêm default getdate()
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "datetime2 default getdate()")
     private LocalDateTime createdAt;
 

@@ -60,5 +60,4 @@ public class AuthController {
         UserDto dto = authService.register(request);
         return ResponseEntity.ok(dto);
     }
-
 }
