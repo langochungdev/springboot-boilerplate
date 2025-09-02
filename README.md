@@ -1,57 +1,95 @@
 # Spring Boot Boilerplate
 
-Dự án mẫu giúp khởi tạo ứng dụng web Java với Spring Boot 3. Bao gồm xác thực JWT, giao tiếp WebSocket, tích hợp Redis và thiết kế tính năng theo mô-đun.
+Ứng dụng mẫu giúp khởi tạo nhanh dự án web với Spring Boot 3, cấu trúc theo mô-đun và hỗ trợ đầy đủ bảo mật, thời gian thực và các tiện ích thường dùng.
 
-## Tính năng
-- **Bảo mật JWT** với danh sách đen token lưu trong Redis
-- **REST API** cho đăng nhập, quản lý người dùng, thông báo, thiết bị và các tính năng khác
-- **WebSocket** phục vụ chat và thông báo thời gian thực
-- **SQL Server** lưu trữ dữ liệu thông qua Spring Data JPA
-- **OpenAPI/Swagger UI** tài liệu API sử dụng springdoc-openapi
+## Mục lục
+- [Kiến trúc và công nghệ](#kiến-trúc-và-công-nghệ)
+- [Chức năng chính](#chức-năng-chính)
+- [Yêu cầu](#yêu-cầu)
+- [Cài đặt & Chạy](#cài-đặt--chạy)
+- [Cấu hình](#cấu-hình)
+- [Tài liệu API](#tài-liệu-api)
+- [Chạy kiểm thử](#chạy-kiểm-thử)
+- [Cấu trúc thư mục](#cấu-trúc-thư-mục)
+- [Đóng góp](#đóng-góp)
+- [Giấy phép](#giấy-phép)
+
+## Kiến trúc và công nghệ
+- **Spring Boot 3** với `spring-boot-starter-parent`.
+- **Web MVC** và `spring-boot-starter-data-jpa` cho REST và truy cập CSDL.
+- **Spring Security** + **JWT** với danh sách đen token lưu trong **Redis**.
+- **WebSocket** xử lý chat/thông báo thời gian thực.
+- Hỗ trợ **SQL Server** và **PostgreSQL** qua HikariCP.
+- **Flyway** quản lý migration.
+- **MapStruct** và **Lombok** giảm boilerplate.
+- Log định dạng JSON với `logstash-logback-encoder`.
+- **springdoc-openapi** sinh tài liệu API.
+
+## Chức năng chính
+- Đăng ký, đăng nhập và quản lý người dùng.
+- Quản lý thiết bị, thông báo.
+- Trò chuyện real-time qua WebSocket.
+- Upload tệp.
+- Gói common chứa util, filter, service, exception.
 
 ## Yêu cầu
 - [Java 21](https://adoptium.net/)
-- [Maven](https://maven.apache.org/) 3.9+
-- Máy chủ [SQL Server](https://www.microsoft.com/en-us/sql-server)
+- [Maven 3.9+](https://maven.apache.org/)
+- Máy chủ [SQL Server](https://www.microsoft.com/en-us/sql-server) hoặc [PostgreSQL](https://www.postgresql.org/)
 - Máy chủ [Redis](https://redis.io/)
 
-## Bắt đầu
-1. Sao chép kho lưu trữ:
+## Cài đặt & Chạy
+1. Clone repo:
    ```bash
    git clone <repo-url>
    cd springboot-boilerplate
    ```
-2. Cấu hình cơ sở dữ liệu, Redis và JWT trong `src/main/resources/application.properties`.
-3. Biên dịch và chạy ứng dụng:
+2. Thiết lập biến môi trường:
+   ```bash
+   export JWT_SECRET=<jwt-secret>
+   export SQLSERVER_PASSWORD=<db-password>
+   export REDIS_PASSWORD=<redis-password>
+   ```
+3. Cấu hình thêm trong `src/main/resources/application.properties` nếu cần.
+4. Biên dịch và chạy:
    ```bash
    ./mvnw spring-boot:run
    ```
-   API sẽ chạy tại `http://localhost:8080`.
+   Ứng dụng chạy tại `http://localhost:8080`.
+
+Để đóng gói JAR:
+```bash
+./mvnw clean package
+java -jar target/boilerplate.jar
+```
+
+## Cấu hình
+`application.properties` bao gồm cấu hình server, datasource, Redis, JWT và logging. Các thông số nhạy cảm được lấy từ biến môi trường.
 
 ## Tài liệu API
-Khi ứng dụng chạy, truy cập Swagger UI tại:
+Khi ứng dụng chạy, truy cập:
 ```
 http://localhost:8080/swagger-ui.html
 ```
 
 ## Chạy kiểm thử
-Thực thi toàn bộ kiểm thử đơn vị:
 ```bash
 ./mvnw test
 ```
 
-## Cấu trúc dự án
+## Cấu trúc thư mục
 ```
 src/
- └── main
-     ├── java/com/instar/...   # Mã nguồn Java
-     └── resources/            # application.properties, templates
-uploads/                      # Tệp được tải lên
+ ├── main
+ │   ├── java/com/boilerplate/...  # mã nguồn
+ │   └── resources/               # config, template, migration
+uploads/                          # tệp tải lên
+logs/                             # log output
 ```
 
 ## Đóng góp
-Hoan nghênh các pull request. Với thay đổi lớn, vui lòng mở issue để trao đổi trước.
+Mọi đóng góp đều được hoan nghênh. Vui lòng tạo issue để thảo luận trước khi gửi pull request lớn.
 
 ## Giấy phép
-Dự án chưa được cấp phép.
+Dự án chưa kèm theo giấy phép chính thức. Vui lòng liên hệ nếu muốn sử dụng.
 
