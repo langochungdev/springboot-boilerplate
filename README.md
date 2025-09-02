@@ -1,57 +1,57 @@
 # Spring Boot Boilerplate
 
-A template project for building Java web applications using Spring Boot 3. It showcases JWT-based authentication, WebSocket messaging, Redis integration and modular feature design.
+Dự án mẫu giúp khởi tạo ứng dụng web Java với Spring Boot 3. Bao gồm xác thực JWT, giao tiếp WebSocket, tích hợp Redis và thiết kế tính năng theo mô-đun.
 
-## Features
-- **JWT security** with token blacklist stored in Redis
-- **REST APIs** for authentication, users, notifications, devices and more
-- **WebSocket** configuration for real-time chat and notifications
-- **SQL Server** persistence via Spring Data JPA
-- **OpenAPI/Swagger UI** documentation via springdoc-openapi
+## Tính năng
+- **Bảo mật JWT** với danh sách đen token lưu trong Redis
+- **REST API** cho đăng nhập, quản lý người dùng, thông báo, thiết bị và các tính năng khác
+- **WebSocket** phục vụ chat và thông báo thời gian thực
+- **SQL Server** lưu trữ dữ liệu thông qua Spring Data JPA
+- **OpenAPI/Swagger UI** tài liệu API sử dụng springdoc-openapi
 
-## Requirements
+## Yêu cầu
 - [Java 21](https://adoptium.net/)
 - [Maven](https://maven.apache.org/) 3.9+
-- [SQL Server](https://www.microsoft.com/en-us/sql-server) instance
-- [Redis](https://redis.io/) instance
+- Máy chủ [SQL Server](https://www.microsoft.com/en-us/sql-server)
+- Máy chủ [Redis](https://redis.io/)
 
-## Getting Started
-1. Clone the repository:
+## Bắt đầu
+1. Sao chép kho lưu trữ:
    ```bash
    git clone <repo-url>
    cd springboot-boilerplate
    ```
-2. Configure the database, Redis and JWT settings in `src/main/resources/application.properties`.
-3. Build and run the application:
+2. Cấu hình cơ sở dữ liệu, Redis và JWT trong `src/main/resources/application.properties`.
+3. Biên dịch và chạy ứng dụng:
    ```bash
    ./mvnw spring-boot:run
    ```
-   The API will start on `http://localhost:8080`.
+   API sẽ chạy tại `http://localhost:8080`.
 
-## API Documentation
-When the application is running, Swagger UI is available at:
+## Tài liệu API
+Khi ứng dụng chạy, truy cập Swagger UI tại:
 ```
 http://localhost:8080/swagger-ui.html
 ```
 
-## Running Tests
-Execute all unit tests with:
+## Chạy kiểm thử
+Thực thi toàn bộ kiểm thử đơn vị:
 ```bash
 ./mvnw test
 ```
 
-## Project Structure
+## Cấu trúc dự án
 ```
 src/
  └── main
-     ├── java/com/instar/...   # Java source files
+     ├── java/com/instar/...   # Mã nguồn Java
      └── resources/            # application.properties, templates
-uploads/                      # uploaded files
+uploads/                      # Tệp được tải lên
 ```
 
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+## Đóng góp
+Hoan nghênh các pull request. Với thay đổi lớn, vui lòng mở issue để trao đổi trước.
 
-## License
-This project is not licensed.
+## Giấy phép
+Dự án chưa được cấp phép.
 
