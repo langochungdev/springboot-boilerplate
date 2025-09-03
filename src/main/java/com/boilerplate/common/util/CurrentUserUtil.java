@@ -34,7 +34,7 @@ public class CurrentUserUtil {
     public User getUser() {
         UUID userId = getCurrentUserId();
         return userId != null
-                ? userRepository.findByIdWithRoles(userId).orElse(null)
+                ? userRepository.findById(userId).orElse(null)
                 : null;
     }
 }

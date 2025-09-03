@@ -3,24 +3,22 @@ import com.boilerplate.common.exception.BusinessException;
 import com.boilerplate.common.exception.errorcode.AuthError;
 import com.boilerplate.common.service.TokenBlacklistService;
 import com.boilerplate.common.util.JwtUtil;
-import com.boilerplate.feature.auth.dto.RegisterRequest;
 import com.boilerplate.feature.auth.dto.AuthRequest;
 import com.boilerplate.feature.auth.dto.AuthResponse;
+import com.boilerplate.feature.auth.dto.RegisterRequest;
 import com.boilerplate.feature.auth.service.AuthService;
 import com.boilerplate.feature.user.service.DeviceService;
-import com.boilerplate.feature.user.entity.User;
 import com.boilerplate.feature.user.dto.UserDto;
+import com.boilerplate.feature.user.entity.User;
 import com.boilerplate.feature.user.mapper.UserMapper;
 import com.boilerplate.feature.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
