@@ -28,6 +28,16 @@ CREATE TABLE user_roles (
                             CONSTRAINT uq_userroles UNIQUE (user_id, role_id)
 );
 
+CREATE TABLE refresh_tokens (
+                                id UNIQUEIDENTIFIER PRIMARY KEY,
+                                user_id UNIQUEIDENTIFIER NOT NULL,
+                                token VARCHAR(255) NOT NULL UNIQUE,
+                                created_at DATETIME2 NOT NULL DEFAULT GETDATE(),
+                                expires_at DATETIME2 NOT NULL,
+                                revoked BIT NOT NULL DEFAULT 0,
+                                CONSTRAINT fk_refreshtokens_user FOREIGN KEY (user_id) REFERENCES app_users(id)
+);
+
 CREATE TABLE notifications (
                                id UNIQUEIDENTIFIER PRIMARY KEY,
                                user_id UNIQUEIDENTIFIER NOT NULL,

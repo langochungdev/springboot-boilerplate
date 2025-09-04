@@ -1,6 +1,9 @@
 package com.boilerplate.feature.auth.dto;
-import lombok.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.Set;
 import java.util.UUID;
 
@@ -10,7 +13,14 @@ import java.util.UUID;
 @Builder
 public class AuthResponse {
     private String token;
+
+    @JsonIgnore
+    private String refreshToken;
+
+    @Builder.Default
+    private String token_type = "Bearer";
     private Long expiresIn;
+    private Long refreshExpiresIn;
     private User user;
 
     @Data

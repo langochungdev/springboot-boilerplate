@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.boilerplate.common.exception.BusinessException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
-
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
@@ -30,7 +29,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private static final Set<String> EXCLUDED_PATHS = Set.of(
             "/api/auth/logout",
             "/api/auth/login",
-            "/api/auth/register"
+            "/api/auth/register",
+            "/api/auth/refresh"
     );
     private final HandlerExceptionResolver resolver;
     @Autowired
@@ -52,25 +52,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             System.out.println(request.getRequestURI());
 
             String path = request.getRequestURI();
-            if (EXCLUDED_PATHS.stream().anyMatch(path::equalsIgnoreCase)) {
+            if (EXCLUDED_PATHS.contains(path) || path.startsWith("/ws-chat")) {
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            String token = jwtUtil.getTokenFromCookie(request);
-            jwtUtil.validateOrThrow(token);
 
-            if (tokenBlacklistService.isTokenBlacklisted(token)) {
-                throw new BusinessException(AuthError.BLACKLISTED_TOKEN);
-            }
+            String token = jwtUtil.getTokenBearer(request);
+            jwtUtil.validateOrThrow(token);
 
             UUID userId = jwtUtil.extractUserId(token);
             if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                User user = userRepository.findById(userId).orElse(null);
-                if (user == null) {
-                    throw new BusinessException(AuthError.USER_NOT_FOUND);
-                }
-
+                User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(AuthError.USER_NOT_FOUND));
                 UserDetails userDetails = new CustomUserDetails(
                         user.getId(),
                         user.getUsername(),
@@ -83,8 +76,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                 .map(ur -> new SimpleGrantedAuthority("ROLE_" + ur.getRole().getName()))
                                 .toList()
                 );
-
-
 
 
                 UsernamePasswordAuthenticationToken authenticationToken =
