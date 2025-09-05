@@ -162,6 +162,12 @@
 			<version>7.4</version>
 		</dependency>
 
+		<!-- oauth2 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -203,7 +209,7 @@
 						</exclude>
 					</excludes>
 					<!-- Nếu bạn có main class cụ thể, khai báo:
-                    <mainClass>com.instar.YourApplication</mainClass>
+                    <mainClass>com.boilerplate.YourApplication</mainClass>
                     -->
 				</configuration>
 			</plugin>

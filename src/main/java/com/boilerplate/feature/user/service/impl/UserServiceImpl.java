@@ -8,6 +8,7 @@ import com.boilerplate.feature.user.repository.UserRepository;
 import com.boilerplate.feature.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CachePut(value = "UserDto", key = "#userId")
     public UserDto getUserById(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(UserError.USER_NOT_FOUND));
