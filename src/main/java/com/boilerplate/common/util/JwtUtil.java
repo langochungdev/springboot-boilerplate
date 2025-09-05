@@ -47,39 +47,25 @@ public class JwtUtil {
                 .compact();
     }
 
-    public boolean validateOrThrow(String token) {
+    public void validate(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
-            return true;
         } catch (ExpiredJwtException ex) {
-            throw new BusinessException(AuthError.INVALID_TOKEN, "Token đã hết hạn");
+            throw new BusinessException(AuthError.INVALID_TOKEN, "Token đã hết hạn", ex);
         } catch (UnsupportedJwtException ex) {
-            throw new BusinessException(AuthError.INVALID_TOKEN, "Token không được hỗ trợ");
+            throw new BusinessException(AuthError.INVALID_TOKEN, "Token không được hỗ trợ", ex);
         } catch (MalformedJwtException ex) {
-            throw new BusinessException(AuthError.INVALID_TOKEN, "Token sai định dạng");
+            throw new BusinessException(AuthError.INVALID_TOKEN, "Token sai định dạng", ex);
         } catch (SignatureException ex) {
-            throw new BusinessException(AuthError.INVALID_TOKEN, "Chữ ký token không hợp lệ");
+            throw new BusinessException(AuthError.INVALID_TOKEN, "Chữ ký token không hợp lệ", ex);
         } catch (IllegalArgumentException ex) {
-            throw new BusinessException(AuthError.MISSING_TOKEN);
+            throw new BusinessException(AuthError.MISSING_TOKEN, "Thiếu token", ex);
         }
     }
 
-    public boolean validateRefreshOrThrow(String token) {
-        try {
-            Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token);
-            return true;
-        } catch (ExpiredJwtException ex) {
-            throw new BusinessException(AuthError.INVALID_TOKEN, "Refresh token đã hết hạn");
-        } catch (Exception ex) {
-            throw new BusinessException(AuthError.INVALID_TOKEN, "Refresh token không hợp lệ");
-        }
-    }
 
     public long getExpirationFromToken(String token) {
         return Jwts.parserBuilder()

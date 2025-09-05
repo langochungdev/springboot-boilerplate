@@ -1,7 +1,6 @@
 package com.boilerplate.feature.auth.service.impl;
 import com.boilerplate.common.exception.BusinessException;
 import com.boilerplate.common.exception.errorcode.AuthError;
-import com.boilerplate.common.service.TokenBlacklistService;
 import com.boilerplate.common.util.JwtUtil;
 import com.boilerplate.feature.auth.dto.AuthRequest;
 import com.boilerplate.feature.auth.dto.AuthResponse;
@@ -78,12 +77,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void logout(String refreshToken, String deviceId) {
+    public void logout(String refreshToken, UUID deviceId) {
         try {
-            if (refreshToken != null && jwtUtil.validateOrThrow(refreshToken)) {
+            if (refreshToken != null) {
+                jwtUtil.validate(refreshToken);
                 UUID userId = jwtUtil.extractUserId(refreshToken);
 
-                deviceService.deactivateDevice(userId, deviceId);
+                deviceService.revokeDevice(userId, deviceId);
 
                 refreshTokenService.revokeToken(refreshToken);
                 log.info("[AUTH] Logout thành công user={}, device deactivated={}, refreshtoken={}",
@@ -111,7 +111,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse refresh(String refreshToken) {
-        jwtUtil.validateRefreshOrThrow(refreshToken);
+        jwtUtil.validate(refreshToken);
         UUID userId = jwtUtil.extractUserId(refreshToken);
 
         RefreshToken newRefresh = refreshTokenService.validateAndRotate(userId, refreshToken, jwtUtil.getRefreshExpiration());

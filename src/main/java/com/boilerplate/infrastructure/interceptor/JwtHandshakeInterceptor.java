@@ -27,7 +27,8 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
             String token = httpRequest.getParameter("token");
 
-            if (token != null && jwtUtil.validateOrThrow(token)) {
+            if (token != null) {
+                jwtUtil.validate(token);
                 UUID userId = jwtUtil.extractUserId(token);
                 attributes.put("userId", userId);
             } else {

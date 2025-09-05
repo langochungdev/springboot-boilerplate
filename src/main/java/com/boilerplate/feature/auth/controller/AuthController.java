@@ -13,6 +13,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -31,23 +33,15 @@ public class AuthController {
                 .maxAge(authResponse.getRefreshExpiresIn() / 1000)
                 .build();
 
-//        AuthResponse safeResponse = AuthResponse.builder()
-//                .token(authResponse.getToken())
-//                .expiresIn(authResponse.getExpiresIn())
-//                .refreshExpiresIn(authResponse.getRefreshExpiresIn())
-//                .user(authResponse.getUser())
-//                .build();
-
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .body(authResponse);
     }
 
-
     @PostMapping("/logout")
     public ResponseEntity<?> logout(
             @CookieValue(name = "refreshToken", required = false) String refreshToken,
-            @RequestHeader(name = "X-Device-Id", required = false) String deviceId
+            @RequestHeader(name = "X-Device-Id", required = false) UUID deviceId
     ) {
         authService.logout(refreshToken, deviceId);
 
@@ -70,12 +64,8 @@ public class AuthController {
         return ResponseEntity.ok(dto);
     }
 
-
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
-        if (refreshToken == null) {
-            throw new BusinessException(AuthError.MISSING_TOKEN, "Thiếu refresh token");
-        }
 
         AuthResponse authResponse = authService.refresh(refreshToken);
 

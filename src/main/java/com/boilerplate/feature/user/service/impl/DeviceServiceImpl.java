@@ -35,19 +35,6 @@ public class DeviceServiceImpl implements DeviceService{
         deviceRepository.save(device);
     }
 
-    public void deactivateDevice(UUID userId, String deviceId) {
-        deviceRepository.findByUserIdAndDeviceId(userId, deviceId)
-                .ifPresent(d -> {
-                    d.setIsActive(false);
-                    deviceRepository.save(d);
-                });
-    }
-
-    @Override
-    public List<Device> getMyDevices(UUID userId) {
-        return deviceRepository.findByUserId(userId);
-    }
-
     @Override
     public void revokeDevice(UUID userId, UUID deviceId) {
         deviceRepository.findById(deviceId)
@@ -56,6 +43,11 @@ public class DeviceServiceImpl implements DeviceService{
                     d.setIsActive(false);
                     deviceRepository.save(d);
                 });
+    }
+
+    @Override
+    public List<Device> getDevicesByUserId(UUID userId) {
+        return deviceRepository.findByUserId(userId);
     }
 }
 

@@ -11,14 +11,14 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/me")
 @RequiredArgsConstructor
-public class MeController {
+public class UserController {
     private final UserService userService;
     private final CurrentUserUtil currentUserUtil;
 
     @GetMapping
     public ResponseEntity<UserDto> checkStatus() {
         UUID userId = currentUserUtil.getUser().getId();
-        return ResponseEntity.ok(userService.checkStatus(userId));
+        return ResponseEntity.ok(userService.getUserById(userId));
     }
 
     @PutMapping
@@ -26,5 +26,4 @@ public class MeController {
         UUID userId = currentUserUtil.getUser().getId();
         return ResponseEntity.ok(userService.updateProfile(userId, request));
     }
-
 }
