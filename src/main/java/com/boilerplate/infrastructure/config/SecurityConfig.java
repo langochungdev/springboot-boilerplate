@@ -1,5 +1,5 @@
 package com.boilerplate.infrastructure.config;
-import com.boilerplate.common.filter.JwtAuthFilter;
+import com.boilerplate.infrastructure.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package com.boilerplate.common.filter;
+package com.boilerplate.infrastructure.filter;
 import com.boilerplate.common.exception.BusinessException;
 import com.boilerplate.common.exception.errorcode.AuthError;
 import com.boilerplate.common.util.JwtUtil;

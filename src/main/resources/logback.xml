@@ -48,4 +48,25 @@
     <logger name="com.boilerplate.infrastructure.interceptor" level="DEBUG" additivity="false">
         <appender-ref ref="HTTP"/>
     </logger>
+
+    <!-- Audit -->
+    <appender name="AUDIT" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_DIR}/audit.log</file>
+        <append>false</append>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+    <logger name="com.boilerplate.common.aop.AuditAspect" level="INFO" additivity="false">
+        <appender-ref ref="AUDIT"/>
+    </logger>
+
+    <!-- Error -->
+    <appender name="ERROR" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_DIR}/error.log</file>
+        <append>false</append>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+    <logger name="com.boilerplate.common.aop" level="ERROR" additivity="false">
+        <appender-ref ref="ERROR"/>
+    </logger>
+
 </configuration>
