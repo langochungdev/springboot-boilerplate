@@ -1,6 +1,7 @@
 package com.boilerplate.infrastructure.config;
 import com.boilerplate.common.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -27,19 +28,24 @@ import com.boilerplate.infrastructure.security.CustomOAuth2SuccessHandler;
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthenticationFilter;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+
     @Bean
-    @Order(1)
-    public SecurityFilterChain wsSecurity(HttpSecurity http) throws Exception {
+    @Order(0) // Ưu tiên cao nhất
+    public SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/ws-chat/**", "/ws/**", "/app/**", "/topic/**", "/queue/**")
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .securityMatcher(EndpointRequest.toAnyEndpoint())
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()
+//                        .requestMatchers(EndpointRequest.to("health"), EndpointRequest.to("info")).permitAll()
+//                        .anyRequest().authenticated()
+
+                )
+                .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 
+
     @Bean
-    @Order(2)
+    @Order(1)
     public SecurityFilterChain apiSecurity(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults())
@@ -61,7 +67,16 @@ public class SecurityConfig {
         return http.build();
     }
 
-
+    @Bean
+    @Order(2)
+    public SecurityFilterChain wsSecurity(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/ws-chat/**", "/ws/**", "/app/**", "/topic/**", "/queue/**")
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        return http.build();
+    }
 
 
     @Bean

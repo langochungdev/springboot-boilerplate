@@ -8,6 +8,7 @@ import com.boilerplate.feature.user.repository.UserRepository;
 import com.boilerplate.feature.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +24,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
+    @CachePut(value = "UserDto", key = "#userId")
     public UserDto updateProfile(UUID userId, UserDto dto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(UserError.USER_NOT_FOUND));
@@ -54,6 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CacheEvict(value = "UserDto", key = "#userId")
     public void lockUser(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(UserError.USER_NOT_FOUND));
@@ -62,6 +65,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CacheEvict(value = "UserDto", key = "#userId")
     public void unlockUser(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(UserError.USER_NOT_FOUND));
