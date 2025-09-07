@@ -12,10 +12,10 @@ import java.util.Arrays;
 @Slf4j
 @Aspect
 @Component
-public class AuditAspect {
+public class SecurityAspect {
 
-    @Around("execution(* com.boilerplate.feature..service..*(..))")
-    public Object logAudit(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("execution(* com.boilerplate.feature.auth..*(..))")
+    public Object logSecurity(ProceedingJoinPoint joinPoint) throws Throwable {
         String method = joinPoint.getSignature().toShortString();
         Object[] args = joinPoint.getArgs();
         long start = System.currentTimeMillis();
@@ -23,7 +23,7 @@ public class AuditAspect {
         try {
             Object result = joinPoint.proceed();
             long duration = System.currentTimeMillis() - start;
-            log.info("method={} args={} result={} duration={}ms timestamp={}",
+            log.info("SECURITY method={} args={} result={} duration={}ms timestamp={}",
                     method,
                     Arrays.toString(args),
                     result,
@@ -31,7 +31,7 @@ public class AuditAspect {
                     Instant.now());
             return result;
         } catch (Throwable ex) {
-            log.warn("method={} args={} error={} timestamp={}",
+            log.warn("SECURITY method={} args={} error={} timestamp={}",
                     method,
                     Arrays.toString(args),
                     ex.getMessage(),
