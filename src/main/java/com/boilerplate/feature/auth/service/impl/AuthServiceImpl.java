@@ -31,6 +31,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final DeviceService deviceService;
     private final RefreshTokenService refreshTokenService;
+
     @Override
     public AuthResponse login(AuthRequest request) {
         User user = userRepository.findByUsername(request.getUsername())

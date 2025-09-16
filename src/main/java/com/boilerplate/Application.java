@@ -18,3 +18,5 @@ public class Application implements ApplicationListener<ApplicationReadyEvent> {
 	}
 
 }
+//http://localhost:3000/
+//http://localhost:8080/swagger-ui/index.html

@@ -1,4 +1,4 @@
-package com.boilerplate.common.aop;
+package com.boilerplate.infrastructure.aop;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -12,10 +12,10 @@ import java.util.Arrays;
 @Slf4j
 @Aspect
 @Component
-public class SecurityAspect {
+public class AuditAspect {
 
-    @Around("execution(* com.boilerplate.feature.auth..*(..))")
-    public Object logSecurity(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("execution(* com.boilerplate.feature..service..*(..))")
+    public Object logAudit(ProceedingJoinPoint joinPoint) throws Throwable {
         String method = joinPoint.getSignature().toShortString();
         Object[] args = joinPoint.getArgs();
         long start = System.currentTimeMillis();
@@ -23,7 +23,7 @@ public class SecurityAspect {
         try {
             Object result = joinPoint.proceed();
             long duration = System.currentTimeMillis() - start;
-            log.info("SECURITY method={} args={} result={} duration={}ms timestamp={}",
+            log.info("method={} args={} result={} duration={}ms timestamp={}",
                     method,
                     Arrays.toString(args),
                     result,
@@ -31,7 +31,7 @@ public class SecurityAspect {
                     Instant.now());
             return result;
         } catch (Throwable ex) {
-            log.warn("SECURITY method={} args={} error={} timestamp={}",
+            log.warn("method={} args={} error={} timestamp={}",
                     method,
                     Arrays.toString(args),
                     ex.getMessage(),
