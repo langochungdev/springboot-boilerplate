@@ -79,12 +79,35 @@ http://localhost:8080/swagger-ui.html
 
 ## Cấu trúc thư mục
 ```
-src/
- ├── main
- │   ├── java/com/boilerplate/...  # mã nguồn
- │   └── resources/               # config, template, migration
-uploads/                          # tệp tải lên
-logs/                             # log output
+src/main/java/com/boilerplate
+├── common
+│   ├── exception
+│   ├── service
+│   ├── util
+│   └── validation
+│
+├── feature
+│   ├── auth
+│   ├── chat
+│   ├── notification
+│   └── user
+│       ├── controller
+│       ├── dto
+│       ├── entity
+│       ├── mapper
+│       ├── repository
+│       └── service
+│
+├── infrastructure
+│   ├── aop
+│   ├── config
+│   ├── filter
+│   ├── interceptor
+│   ├── security
+│   └── Application
+│
+└── resources
+                         # log output
 ```
 
 ## Đóng góp
